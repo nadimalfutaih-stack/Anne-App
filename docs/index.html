@@ -142,7 +142,7 @@ const HINTS = [
 
 // ---- Datenquelle ----
 // Der iPhone-Kurzbefehl "Mein Tag" liest den Kalender auf dem Gerät und öffnet diese Seite mit
-//   #d=<Base64 von Textzeilen>, eine Zeile pro Termin:  Titel|Beginn|Ende|Ganztägig|Kalender
+//   #d=<Base64 von Textzeilen>, eine Zeile pro Termin:  Titel|Beginn|Ende|Ganztägig|Kalender  (statt | geht auch ;)
 //   Beginn/Ende im ISO-8601-Format (z. B. 2026-11-19T10:30:00+01:00), Ganztägig = Ja/Nein.
 // Der Teil nach # wird nie an einen Server geschickt; die Termine bleiben auf dem iPhone.
 // Ohne #d= zeigt die Seite Beispieldaten wie in der Bildvorlage (Uhr fest auf 08:00).
@@ -162,7 +162,7 @@ function readShortcutData(){
     const text = new TextDecoder().decode(Uint8Array.from(atob(b), c=>c.charCodeAt(0)));
     const t0 = new Date(); t0.setHours(0,0,0,0);
     const hm = d => String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
-    return text.split(/\r?\n/).map(l=>l.split("|")).filter(p=>p.length>=5 && p[0].trim()).map(p=>{
+    return text.split(/\r?\n/).map(l=>{ const sep = l.includes("|") ? "|" : ";"; const p = l.split(sep); while (p.length > 5) { p[1] = p[0] + sep + p[1]; p.shift(); } return p; }).filter(p=>p.length>=5 && p[0].trim()).map(p=>{
       const [t, s, e, ad, cal] = p.map(x=>x.trim());
       const start = new Date(s), end = new Date(e);
       if (isNaN(start)) return null;
