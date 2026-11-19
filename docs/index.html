@@ -289,8 +289,8 @@ document.addEventListener("click", ev=>{
   }
   if (ev.target.id==="undo" && lastDone){ done.delete(lastDone); lastDone = null; save(); render(); document.getElementById("toast").hidden = true; }
 });
-// Schrift wächst mit "Größere Schrift", aber höchstens bis 20 px Grundgröße (Standard 17 px).
-(function(){ const r = document.documentElement; const fs = parseFloat(getComputedStyle(r).fontSize) || 17; const cap = innerWidth < 375 ? 18 : 20; if (fs > cap) r.style.fontSize = cap + "px"; })();
+// Schrift wächst mit "Größere Schrift", aber höchstens bis 20 px Grundgröße (Standard 17 px), danach 3 px kleiner.
+(function(){ const r = document.documentElement; const fs = parseFloat(getComputedStyle(r).fontSize) || 17; const cap = innerWidth < 375 ? 18 : 20; r.style.fontSize = (Math.min(fs, cap) - 3) + "px"; /* alles 3 px kleiner (Wunsch Nadim) */ })();
 // Inhalt nie unter der unteren Leiste verstecken: Abstand folgt der echten Leistenhöhe (wächst mit der Schrift).
 const navEl = document.querySelector("nav");
 const setNavH = () => document.documentElement.style.setProperty("--navh", navEl.getBoundingClientRect().height + "px");
