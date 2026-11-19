@@ -72,7 +72,7 @@ h1{font-weight:800;font-size:2.353rem;letter-spacing:-.02em;line-height:1.1;marg
 .cheer{font-weight:600;font-size:.941rem;margin:0 0 .45rem .2rem;color:var(--muted)}
 .search{width:100%;font:inherit;font-size:1.176rem;min-height:52px;padding:.7rem 1rem;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--fg);margin-top:1.1rem}
 
-nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:.55rem max(16px,env(safe-area-inset-right,0px)) calc(.55rem + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+nav{position:fixed;z-index:20;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:.55rem max(16px,env(safe-area-inset-right,0px)) calc(.55rem + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 nav div{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem}
 /* Sehr große Schrift auf schmalem Bildschirm: Tasten in zwei Reihen, damit kein Wort zerbricht. */
 nav{container:nav/inline-size}
@@ -81,7 +81,7 @@ nav button{font:inherit;font-size:1.059rem;font-weight:600;min-height:52px;paddi
 nav button[aria-pressed="true"]{background:var(--nav-on);color:var(--nav-on-fg)}
 button:focus-visible,.search:focus-visible,.calbtn:focus-visible{outline:3px solid var(--nav-on);outline-offset:2px}
 
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--navh,5.4rem) + .5rem);background:var(--nav-on);color:var(--nav-on-fg);border-radius:999px;padding:.35rem .35rem .35rem 1.2rem;display:flex;gap:.6rem;align-items:center;font-size:1.059rem;font-weight:600;max-width:calc(100% - 32px)}
+.toast{position:fixed;z-index:30;left:50%;transform:translateX(-50%);bottom:calc(var(--navh,5.4rem) + .5rem);background:var(--nav-on);color:var(--nav-on-fg);border-radius:999px;padding:.35rem .35rem .35rem 1.2rem;display:flex;gap:.6rem;align-items:center;font-size:1.059rem;font-weight:600;max-width:calc(100% - 32px)}
 .toast button{font:inherit;font-weight:700;min-height:44px;background:var(--card);color:var(--fg);border:0;border-radius:999px;padding:.4rem 1rem;cursor:pointer}
 /* Schmaler Bildschirm oder sehr große Schrift: Uhrzeit rückt über den Titel, damit der Titel die volle Breite bekommt. */
 .listcard{container:list/inline-size}
@@ -279,6 +279,8 @@ document.addEventListener("click", ev=>{
   }
   if (ev.target.id==="undo" && lastDone){ done.delete(lastDone); lastDone = null; save(); render(); document.getElementById("toast").hidden = true; }
 });
+// Schrift wächst mit "Größere Schrift", aber höchstens bis 20 px Grundgröße (Standard 17 px).
+(function(){ const r = document.documentElement; const fs = parseFloat(getComputedStyle(r).fontSize) || 17; if (fs > 20) r.style.fontSize = "20px"; })();
 // Inhalt nie unter der unteren Leiste verstecken: Abstand folgt der echten Leistenhöhe (wächst mit der Schrift).
 const navEl = document.querySelector("nav");
 const setNavH = () => document.documentElement.style.setProperty("--navh", navEl.getBoundingClientRect().height + "px");
