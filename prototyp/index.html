@@ -1,64 +1,74 @@
 <title>Mein Tag</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap">
 <style>
-/* Layout: ein Zettel. Oben "Als Nächstes", darunter der Tag, unten vier große Tasten. Große Schrift, ausgeschriebene Wörter. */
+/* Layout: wie Annes Apple-Kalender – großer fetter Titel mit rotem Tageskreis, Liste mit Uhrzeit links und Kalenderfarbe als Streifen, Pillen-Knöpfe unten. Nur größer. */
 :root{
-  --bg:#f6f3ee; --paper:#ffffff; --fg:#1f1d1b; --muted:#6a645d; --line:#e4ded5;
-  --accent:#1f6f5c; --accent-soft:#e1efe9; --warn:#a8461f; --warn-soft:#f7e6dd;
-  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-  --body:"Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  --bg:#ffffff; --fg:#000000; --muted:#8a8a8e; --line:#e5e5ea; --fill:#f2f2f7;
+  --red:#ff3b30; --glass:rgba(249,249,251,.82); --glass-line:rgba(0,0,0,.12);
+  --cal-kalender:#c03fd0; --cal-privat:#2c8bab; --cal-arbeit:#e0782a; --cal-nadim:#1f7cf0;
+  --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  --font-display:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#171614; --paper:#22201d; --fg:#f2eee8; --muted:#b1a99f; --line:#38342f;
-  --accent:#6fc7ad; --accent-soft:#1d3530; --warn:#f2a07c; --warn-soft:#3b261c; color-scheme:dark}}
+  --bg:#000000; --fg:#ffffff; --muted:#98989f; --line:#2c2c2e; --fill:#1c1c1e;
+  --red:#ff453a; --glass:rgba(30,30,32,.8); --glass-line:rgba(255,255,255,.14);
+  --cal-kalender:#d86ae6; --cal-privat:#4fb0d0; --cal-arbeit:#f0954d; --cal-nadim:#4a9bff; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#171614; --paper:#22201d; --fg:#f2eee8; --muted:#b1a99f; --line:#38342f;
-  --accent:#6fc7ad; --accent-soft:#1d3530; --warn:#f2a07c; --warn-soft:#3b261c; color-scheme:dark}
+  --bg:#000000; --fg:#ffffff; --muted:#98989f; --line:#2c2c2e; --fill:#1c1c1e;
+  --red:#ff453a; --glass:rgba(30,30,32,.8); --glass-line:rgba(255,255,255,.14);
+  --cal-kalender:#d86ae6; --cal-privat:#4fb0d0; --cal-arbeit:#f0954d; --cal-nadim:#4a9bff; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:19px;line-height:1.45}
-.wrap{max-width:560px;margin:0 auto;padding-block:18px 150px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:20px}
-.demo{font-size:14px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
-h1{font-family:var(--display);font-size:32px;line-height:1.15;margin:0;text-wrap:balance}
-.date{margin:2px 0 0;color:var(--muted)}
-.checked{font-size:15px;color:var(--muted);margin-top:6px}
-.next{background:var(--accent-soft);border-radius:18px;padding:16px 18px}
-.next .lbl{font-size:16px;font-weight:700;color:var(--accent)}
-.next .what{font-family:var(--display);font-size:27px;line-height:1.2;margin-top:2px}
-.next .time{font-size:22px;font-weight:700}
-h2{font-size:17px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
-.list{list-style:none;margin:0;padding:0;background:var(--paper);border:1px solid var(--line);border-radius:18px}
-.row{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;padding:14px 16px;border-top:1px solid var(--line)}
-.row:first-child{border-top:0}
-.row .tm{font-weight:700;font-variant-numeric:tabular-nums;min-width:58px}
-.row .t{min-width:0;overflow-wrap:anywhere}
-.hint{display:block;font-size:15px;color:var(--muted)}
-.hint i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
-.tick{width:40px;height:40px;border-radius:50%;border:2.5px solid var(--muted);background:transparent;cursor:pointer;display:grid;place-items:center;font-size:22px;color:var(--paper);padding:0}
-.done .tick{background:var(--accent);border-color:var(--accent)}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:19px;line-height:1.35;-webkit-font-smoothing:antialiased}
+.wrap{max-width:560px;margin:0 auto;padding-block:14px 150px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.demo{font-size:14px;color:var(--muted);background:var(--fill);border-radius:12px;padding:8px 12px;margin-bottom:14px}
+.greet{font-size:17px;color:var(--muted);font-weight:500}
+.titlebar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:2px}
+h1{font-family:var(--font-display);font-weight:800;font-size:40px;letter-spacing:-.02em;line-height:1.1;margin:0}
+.daycircle{flex:none;width:52px;height:52px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:24px;font-variant-numeric:tabular-nums}
+.daycircle.off{background:transparent;color:var(--fg);border:2px solid var(--line)}
+.sub{font-size:17px;color:var(--muted);margin-top:2px}
+.checked{font-size:14px;color:var(--muted);margin-top:4px}
+.next{margin-top:18px;border-radius:16px;padding:14px 16px;background:var(--fill);display:grid;grid-template-columns:5px 1fr;gap:14px}
+.next .bar{border-radius:3px;background:var(--c)}
+.next .lbl{font-size:15px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.04em}
+.next .what{font-family:var(--font-display);font-size:26px;font-weight:700;line-height:1.2}
+.next .tm{font-size:19px;color:var(--muted);font-weight:600;margin-top:2px}
+.sect{margin-top:26px}
+.sect h2{font-size:15px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.sect h2.day{font-size:20px;color:var(--fg);text-transform:none;letter-spacing:0;font-weight:700}
+.list{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:72px 5px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line);min-height:64px}
+.time{font-variant-numeric:tabular-nums;font-size:17px;font-weight:600;line-height:1.25}
+.time small{display:block;font-size:15px;font-weight:400;color:var(--muted)}
+.time.allday{font-size:15px;font-weight:500;color:var(--muted)}
+.bar{align-self:stretch;border-radius:3px;background:var(--c)}
+.t{min-width:0;overflow-wrap:anywhere;font-weight:600}
+.cal{display:block;font-size:15px;font-weight:400;color:var(--muted)}
+.tick{width:38px;height:38px;border-radius:50%;border:2px solid var(--muted);background:transparent;cursor:pointer;display:grid;place-items:center;font-size:20px;font-weight:700;color:#fff;padding:0}
+.done .tick{background:var(--red);border-color:var(--red)}
 .done .t{color:var(--muted);text-decoration:line-through}
-.empty{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px}
+.done .bar{opacity:.35}
+.empty{padding:16px 0;color:var(--fg);border-bottom:1px solid var(--line)}
 .empty small{display:block;color:var(--muted);font-size:16px;margin-top:4px}
-.later .row{color:var(--muted)}
-.search{width:100%;font:inherit;padding:14px 16px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--fg)}
-nav{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-nav div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-nav button{font:inherit;font-size:17px;font-weight:700;padding:14px 4px;border-radius:14px;border:2px solid var(--line);background:var(--paper);color:var(--fg);cursor:pointer}
-nav button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-button:focus-visible,.search:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);border-radius:14px;padding:12px 16px;display:flex;gap:16px;align-items:center;font-size:17px;max-width:calc(100% - 32px)}
-.toast button{font:inherit;font-weight:700;background:none;border:0;color:var(--accent-soft);text-decoration:underline;cursor:pointer;padding:4px}
-.cheer{color:var(--accent);font-weight:700}
+.cheer{color:var(--red);font-weight:600;font-size:17px;margin:10px 0 0}
+.search{width:100%;font:inherit;padding:12px 16px;border-radius:12px;border:0;background:var(--fill);color:var(--fg);margin-top:18px}
+nav{position:fixed;left:0;right:0;bottom:0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+nav div{pointer-events:auto;max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:5px;border-radius:999px;background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(18px) saturate(1.6);backdrop-filter:blur(18px) saturate(1.6);box-shadow:0 6px 24px rgba(0,0,0,.12)}
+nav button{font:inherit;font-size:17px;font-weight:600;padding:13px 2px;border-radius:999px;border:0;background:transparent;color:var(--fg);cursor:pointer}
+nav button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+button:focus-visible,.search:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--glass);border:1px solid var(--glass-line);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-radius:999px;padding:10px 10px 10px 20px;display:flex;gap:10px;align-items:center;font-size:17px;font-weight:600;max-width:calc(100% - 32px);box-shadow:0 6px 24px rgba(0,0,0,.12)}
+.toast button{font:inherit;font-weight:600;background:var(--red);color:#fff;border:0;border-radius:999px;padding:8px 14px;cursor:pointer}
+@media (max-width:380px){.row{grid-template-columns:62px 5px 1fr auto;gap:10px}h1{font-size:34px}}
 @media (prefers-reduced-motion:no-preference){.row{transition:opacity .25s}}
 </style>
 
 <div class="wrap">
-  <div class="demo">Entwurf mit <b>Beispieleinträgen</b>. Später stehen hier Annes echte Kalendereinträge.</div>
-  <header>
-    <h1 id="hello">Guten Morgen, Anne!</h1>
-    <p class="date" id="date"></p>
-    <div class="checked" id="checked"></div>
-  </header>
+  <div class="demo">Entwurf mit <b>Beispieleinträgen</b>, im Stil von Annes Apple-Kalender.</div>
+  <div class="greet" id="hello">Guten Morgen, Anne!</div>
+  <div class="titlebar"><h1 id="title">Heute</h1><div class="daycircle" id="circle" aria-hidden="true"></div></div>
+  <div class="sub" id="sub"></div>
+  <div class="checked" id="checked"></div>
   <main id="view"></main>
 </div>
 
@@ -71,46 +81,43 @@ button:focus-visible,.search:focus-visible{outline:3px solid var(--accent);outli
 <div class="toast" id="toast" hidden role="status"><span id="toastText">Erledigt</span><button id="undo">Rückgängig</button></div>
 
 <script>
-// Kleine Hinweise: zuerst persönliche Regeln (Namen der Kinder), dann wenige eindeutige Wörter. Unklares bekommt keinen Hinweis.
+// Annes Kalender mit ihren Farben (aus ihrer Kalenderliste)
+const CALS = { kalender:{name:"Kalender",v:"--cal-kalender"}, privat:{name:"Privat",v:"--cal-privat"}, arbeit:{name:"Arbeit",v:"--cal-arbeit"}, nadim:{name:"Nadim",v:"--cal-nadim"} };
+// Kleine Hinweise neben dem Kalendernamen. Unklares bekommt keinen Hinweis.
 const HINTS = [
-  {name:"Kinder",    color:"#d9822b", words:["mia","kita","schule","turnbeutel","elternabend","schwimmkurs","wechselkleidung"]},
-  {name:"Arzt",      color:"#c0392b", words:["arzt","kinderarzt","zahnarzt","u-untersuchung","impfung"]},
-  {name:"Einkauf",   color:"#2f9e6b", words:["kaufen","milch","brot","windeln","rewe","besorgen"]},
-  {name:"Unterlagen",color:"#7d5bbf", words:["unterlagen","steuer","versicherung","kündigen","formular","antrag"]},
-  {name:"Geburtstag",color:"#c2407e", words:["geburtstag","geschenk"]},
-  {name:"Haushalt",  color:"#5f8597", words:["tonne","handwerker","heizung","wäsche"]},
+  {name:"Kinder",    words:["mia","kita","schule","turnbeutel","elternabend","schwimmkurs","wechselkleidung"]},
+  {name:"Arzt",      words:["arzt","kinderarzt","zahnarzt","u-untersuchung","impfung"]},
+  {name:"Einkauf",   words:["kaufen","milch","brot","windeln","rewe","besorgen"]},
+  {name:"Unterlagen",words:["unterlagen","steuer","versicherung","kündigen","formular","antrag"]},
+  {name:"Geburtstag",words:["geburtstag","geschenk"]},
+  {name:"Haushalt",  words:["tonne","handwerker","heizung","wäsche"]},
 ];
-// d = Tage ab heute, time = Uhrzeit (ohne = ganztägig)
+// d = Tage ab heute; ohne time = ganztägig
 const EXAMPLES = [
-  {t:"Kinderarzt mit Mia", d:0, time:"10:30"},
-  {t:"Mia Turnbeutel", d:0},
-  {t:"Milch und Brot kaufen", d:0},
-  {t:"Kaffee mit Lisa", d:0, time:"15:00"},
-  {t:"Gelbe Tonne rausstellen", d:0, time:"20:00"},
-  {t:"Elternabend Kita", d:1, time:"19:30"},
-  {t:"Oma", d:1},
-  {t:"Unterlagen", d:1},
-  {t:"Geschenk für Omas Geburtstag besorgen", d:3},
-  {t:"Steuerunterlagen an Steuerberater", d:4},
-  {t:"Zahnarzt Kontrolle", d:6, time:"08:40"},
-  {t:"Handwerker Heizung", d:9, time:"08:00"},
+  {t:"Kinderarzt mit Mia", d:0, time:"10:30", end:"11:15", cal:"kalender"},
+  {t:"Mia Turnbeutel", d:0, cal:"kalender"},
+  {t:"Milch und Brot kaufen", d:0, cal:"kalender"},
+  {t:"Teammeeting", d:0, time:"13:00", end:"14:00", cal:"arbeit"},
+  {t:"Kaffee mit Lisa", d:0, time:"15:30", end:"16:30", cal:"privat"},
+  {t:"Gelbe Tonne rausstellen", d:0, time:"20:00", end:"20:15", cal:"nadim"},
+  {t:"Elternabend Kita", d:1, time:"19:30", end:"21:00", cal:"kalender"},
+  {t:"Oma", d:1, cal:"privat"},
+  {t:"Unterlagen", d:1, cal:"kalender"},
+  {t:"Geschenk für Omas Geburtstag besorgen", d:3, cal:"kalender"},
+  {t:"Steuerunterlagen an Steuerberater", d:4, cal:"nadim"},
+  {t:"Zahnarzt Kontrolle", d:6, time:"08:40", end:"09:10", cal:"kalender"},
+  {t:"Handwerker Heizung", d:9, time:"08:00", end:"10:00", cal:"nadim"},
 ];
 
 const today = new Date(); today.setHours(0,0,0,0);
 const now = new Date();
-const fmtDay = new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"numeric",month:"long"});
-const fmtShort = new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"numeric",month:"long"});
+const fmtWd = new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"numeric",month:"long"});
 const dateOf = d => { const x = new Date(today); x.setDate(x.getDate()+d); return x; };
-
 const h = now.getHours();
 document.getElementById("hello").textContent = h < 11 ? "Guten Morgen, Anne!" : h < 18 ? "Hallo Anne!" : "Guten Abend, Anne!";
-document.getElementById("date").textContent = "Heute ist " + fmtDay.format(today) + ".";
 document.getElementById("checked").textContent = "Zuletzt geprüft um " + now.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}) + " Uhr";
 
-function hintFor(title){
-  const low = title.toLowerCase();
-  return HINTS.find(c => c.words.some(w => low.includes(w))) || null;
-}
+const hintFor = t => { const l = t.toLowerCase(); const f = HINTS.find(c=>c.words.some(w=>l.includes(w))); return f ? f.name : ""; };
 const items = EXAMPLES.map((e,i)=>({...e, id:"e"+i, hint:hintFor(e.t)}));
 
 let done = new Set();
@@ -121,74 +128,84 @@ let view = "heute", q = "", lastDone = null, toastTimer = null;
 const esc = s => s.replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const nowMin = now.getHours()*60 + now.getMinutes();
 const mins = t => { const [a,b] = t.split(":").map(Number); return a*60+b; };
+const color = i => `var(${CALS[i.cal].v})`;
 
-function row(i, withTick=true){
-  const hint = i.hint ? `<span class="hint"><i style="background:${i.hint.color}"></i>${i.hint.name}</span>` : "";
+function row(i, tick=true){
   const isDone = done.has(i.id);
-  const left = withTick
-    ? `<button class="tick" data-id="${i.id}" aria-label="${isDone?"Zurückholen":"Abhaken"}: ${esc(i.t)}">${isDone?"✓":""}</button>`
-    : `<span class="tm">${i.time || ""}</span>`;
-  const tm = withTick && i.time ? `<b class="tm">${i.time}</b> ` : "";
-  return `<li class="row${isDone?" done":""}">${left}<div class="t">${tm}${esc(i.t)}${hint}</div></li>`;
+  const time = i.time ? `<div class="time">${i.time}<small>${i.end||""}</small></div>` : `<div class="time allday">ganztägig</div>`;
+  const meta = [CALS[i.cal].name, i.hint].filter(Boolean).join(" · ");
+  const btn = tick ? `<button class="tick" data-id="${i.id}" aria-label="${isDone?"Zurückholen":"Abhaken"}: ${esc(i.t)}">${isDone?"✓":""}</button>` : "<span></span>";
+  return `<li class="row${isDone?" done":""}" style="--c:${color(i)}">${time}<span class="bar"></span><div class="t">${esc(i.t)}<span class="cal">${meta}</span></div>${btn}</li>`;
 }
-function dayBlock(d, labelTimed, labelAllDay){
+function dayList(d){
   const list = items.filter(i=>i.d===d);
-  const timed = list.filter(i=>i.time && !done.has(i.id) && (d>0 || mins(i.time) >= nowMin - 30)).sort((a,b)=>a.time.localeCompare(b.time));
-  const allDay = list.filter(i=>!i.time && !done.has(i.id));
+  const open = list.filter(i=>!done.has(i.id) && (!i.time || d>0 || mins(i.end||i.time) >= nowMin))
+    .sort((a,b)=>(a.time?1:0)-(b.time?1:0) || (a.time||"").localeCompare(b.time||""));
   const finished = list.filter(i=>done.has(i.id));
   let html = "";
-  if (!timed.length && !allDay.length){
+  if (!open.length){
     const nxt = items.filter(i=>i.d>d).sort((a,b)=>a.d-b.d)[0];
-    html += `<div class="empty">${d===0?"Heute":"Morgen"} steht nichts mehr an.${nxt?`<small>Danach: ${esc(nxt.t)}, ${fmtShort.format(dateOf(nxt.d))}</small>`:""}</div>`;
+    html += `<div class="sect"><div class="empty">${d===0?"Heute steht nichts mehr an.":"Morgen ist frei. Genieß den Tag!"}${nxt?`<small>Danach: ${esc(nxt.t)}, ${fmtWd.format(dateOf(nxt.d))}</small>`:""}</div></div>`;
+  } else {
+    html += `<div class="sect"><ul class="list">${open.map(i=>row(i)).join("")}</ul></div>`;
   }
-  if (timed.length) html += `<section><h2>${labelTimed}</h2><ul class="list">${timed.map(i=>row(i)).join("")}</ul></section>`;
-  if (allDay.length) html += `<section><h2>${labelAllDay}</h2><ul class="list">${allDay.map(i=>row(i)).join("")}</ul></section>`;
-  if (finished.length) html += `<section><h2>${d===0?"Heute erledigt":"Erledigt"}</h2><p class="cheer" style="margin:0 0 8px">${d===0?`Heute geschafft: ${finished.length} ${finished.length===1?"Ding":"Dinge"}`:""}</p><ul class="list">${finished.map(i=>row(i)).join("")}</ul></section>`;
+  if (finished.length) html += `<div class="sect"><h2>${d===0?"Heute erledigt":"Erledigt"}</h2>${d===0?`<p class="cheer">Heute geschafft: ${finished.length} ${finished.length===1?"Ding":"Dinge"}</p>`:""}<ul class="list">${finished.map(i=>row(i)).join("")}</ul></div>`;
   return html;
+}
+function setHeader(title, d){
+  document.getElementById("title").textContent = title;
+  const c = document.getElementById("circle");
+  if (d === null){ c.hidden = true; document.getElementById("sub").textContent = ""; return; }
+  c.hidden = false; c.textContent = dateOf(d).getDate(); c.classList.toggle("off", d!==0);
+  document.getElementById("sub").textContent = fmtWd.format(dateOf(d));
 }
 function render(){
   const v = document.getElementById("view");
   let html = "";
   if (view==="heute"){
-    const next = items.filter(i=>i.d===0 && i.time && !done.has(i.id) && mins(i.time) >= nowMin - 30).sort((a,b)=>a.time.localeCompare(b.time))[0];
-    if (next) html += `<div class="next"><div class="lbl">Als Nächstes</div><div class="what"><span class="time">${next.time} Uhr</span><br>${esc(next.t)}</div></div>`;
-    html += dayBlock(0, "Termine heute", "Heute zu erledigen");
+    setHeader("Heute", 0);
+    const next = items.filter(i=>i.d===0 && i.time && !done.has(i.id) && mins(i.end||i.time) >= nowMin).sort((a,b)=>a.time.localeCompare(b.time))[0];
+    if (next) html += `<div class="next" style="--c:${color(next)}"><span class="bar"></span><div><div class="lbl">Als Nächstes</div><div class="what">${esc(next.t)}</div><div class="tm">${next.time}–${next.end} Uhr</div></div></div>`;
+    html += dayList(0);
   } else if (view==="morgen"){
-    html += `<h1 style="font-size:26px">Morgen, ${fmtShort.format(dateOf(1))}</h1>` + dayBlock(1, "Termine", "Zu erledigen");
+    setHeader("Morgen", 1); html += dayList(1);
   } else if (view==="danach"){
-    const later = items.filter(i=>i.d>1).sort((a,b)=>a.d-b.d || (a.time||"99").localeCompare(b.time||"99"));
-    const byDay = {};
-    later.forEach(i=>{ (byDay[i.d] ||= []).push(i); });
-    html += Object.entries(byDay).map(([d,l])=>`<section class="later"><h2>${fmtShort.format(dateOf(+d))}</h2><ul class="list">${l.map(i=>row(i,false)).join("")}</ul></section>`).join("") || `<div class="empty">Danach steht noch nichts im Kalender.</div>`;
+    setHeader("Danach", null);
+    const later = items.filter(i=>i.d>1).sort((a,b)=>a.d-b.d || (a.time?1:0)-(b.time?1:0) || (a.time||"").localeCompare(b.time||""));
+    const byDay = {}; later.forEach(i=>{ (byDay[i.d] ||= []).push(i); });
+    html += Object.entries(byDay).map(([d,l])=>`<div class="sect"><h2 class="day">${fmtWd.format(dateOf(+d))}</h2><ul class="list">${l.map(i=>row(i,false)).join("")}</ul></div>`).join("")
+      || `<div class="sect"><div class="empty">Danach steht noch nichts im Kalender.</div></div>`;
   } else {
+    setHeader("Suchen", null);
     html += `<input id="q" class="search" type="search" placeholder="Was suchst du? z. B. Turnbeutel" aria-label="Im Kalender suchen" value="${esc(q)}">`;
     if (q){
-      const hits = items.filter(i=>i.t.toLowerCase().includes(q) || (i.hint && i.hint.name.toLowerCase().includes(q))).sort((a,b)=>a.d-b.d);
+      const hits = items.filter(i=>i.t.toLowerCase().includes(q) || i.hint.toLowerCase().includes(q)).sort((a,b)=>a.d-b.d);
       html += hits.length
-        ? `<ul class="list" style="margin-top:14px">${hits.map(i=>`<li class="row"><span class="tm">${i.time||""}</span><div class="t">${esc(i.t)}<span class="hint">${i.d===0?"Heute":i.d===1?"Morgen":fmtShort.format(dateOf(i.d))}</span></div></li>`).join("")}</ul>`
-        : `<div class="empty" style="margin-top:14px">Dazu habe ich nichts gefunden.<small>Versuch ein anderes Wort.</small></div>`;
+        ? `<div class="sect"><ul class="list">${hits.map(i=>{ const r = row(i,false); const when = i.d===0?"Heute":i.d===1?"Morgen":fmtWd.format(dateOf(i.d)); return r.replace('<span class="cal">', `<span class="cal">${when} · `); }).join("")}</ul></div>`
+        : `<div class="sect"><div class="empty">Dazu habe ich nichts gefunden.<small>Versuch ein anderes Wort.</small></div></div>`;
     }
   }
-  v.innerHTML = `<div style="display:grid;gap:20px">${html}</div>`;
-  if (view==="suchen"){ const inp = document.getElementById("q"); inp.addEventListener("input", e=>{ q = e.target.value.trim().toLowerCase(); render(); const n=document.getElementById("q"); n.focus(); n.setSelectionRange(n.value.length,n.value.length); }); }
+  v.innerHTML = html;
+  if (view==="suchen"){
+    document.getElementById("q").addEventListener("input", e=>{ q = e.target.value.trim().toLowerCase(); render(); const n = document.getElementById("q"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); });
+  }
 }
 function pling(){
   try {
     const ctx = new (window.AudioContext||window.webkitAudioContext)();
     const o = ctx.createOscillator(), g = ctx.createGain();
-    o.frequency.value = 880; o.type = "sine";
+    o.type = "sine"; o.frequency.value = 880;
     g.gain.setValueAtTime(0.0001, ctx.currentTime);
     g.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime+0.02);
     g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.35);
     o.connect(g).connect(ctx.destination); o.start(); o.stop(ctx.currentTime+0.4);
   } catch(_){}
 }
-function showToast(text, undoable){
+function toast(text, undoable){
   const t = document.getElementById("toast");
   document.getElementById("toastText").textContent = text;
   document.getElementById("undo").hidden = !undoable;
-  t.hidden = false; clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>{ t.hidden = true; }, 6000);
+  t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ t.hidden = true; }, 6000);
 }
 document.addEventListener("click", ev=>{
   const nb = ev.target.closest("nav button");
@@ -196,8 +213,8 @@ document.addEventListener("click", ev=>{
   const tk = ev.target.closest(".tick");
   if (tk){
     const id = tk.dataset.id;
-    if (done.has(id)){ done.delete(id); showToast("Wieder offen", false); }
-    else { done.add(id); lastDone = id; pling(); showToast("Erledigt", true); }
+    if (done.has(id)){ done.delete(id); toast("Wieder offen", false); }
+    else { done.add(id); lastDone = id; pling(); toast("Erledigt", true); }
     save(); render(); return;
   }
   if (ev.target.id==="undo" && lastDone){ done.delete(lastDone); lastDone = null; save(); render(); document.getElementById("toast").hidden = true; }
