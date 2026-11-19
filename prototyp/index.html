@@ -1,0 +1,208 @@
+<title>Annes Überblick</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,750&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: eine Spalte wie am Handy – oben "Was ist dran", darunter Kategorien als Filter, dann Liste nach Dringlichkeit */
+:root{
+  --bg:#fbf8f9; --surface:#ffffff; --fg:#2a2226; --muted:#75686e; --line:#ece3e7;
+  --accent:#c2407e; --accent-soft:#f8e6ef;
+  --akut:#d1432f; --akut-soft:#fbe7e3; --bald:#b7791f; --bald-soft:#fbf0dc; --geplant:#5b7a6e; --geplant-soft:#e5efea;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#1a1517; --surface:#241d20; --fg:#f3eaee; --muted:#ab9ca3; --line:#3a2f34;
+  --accent:#ee7fb3; --accent-soft:#3d2230;
+  --akut:#ff8a75; --akut-soft:#40221d; --bald:#e8b25c; --bald-soft:#3a2d18; --geplant:#93bfae; --geplant-soft:#1f3029; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1a1517; --surface:#241d20; --fg:#f3eaee; --muted:#ab9ca3; --line:#3a2f34;
+  --accent:#ee7fb3; --accent-soft:#3d2230;
+  --akut:#ff8a75; --akut-soft:#40221d; --bald:#e8b25c; --bald-soft:#3a2d18; --geplant:#93bfae; --geplant-soft:#1f3029; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+.demo{font-size:12.5px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:8px 12px}
+header h1{font-family:var(--display);font-weight:750;font-size:30px;line-height:1.1;margin:0;text-wrap:balance}
+header p{margin:4px 0 0;color:var(--muted)}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sum{border-radius:14px;padding:12px;display:grid;gap:2px;border:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.sum b{font-family:var(--display);font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.sum span{font-size:12.5px;font-weight:600}
+.sum.akut{background:var(--akut-soft);color:var(--akut)} .sum.bald{background:var(--bald-soft);color:var(--bald)} .sum.geplant{background:var(--geplant-soft);color:var(--geplant)}
+.sum[aria-pressed="true"]{outline:2px solid currentColor;outline-offset:-2px}
+.search{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.search:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chip{flex:none;font:inherit;font-size:13.5px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:7px 12px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.chip .n{color:var(--muted);font-variant-numeric:tabular-nums;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.chip[aria-pressed="true"] .n{color:inherit;opacity:.8}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+section h2{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+section h2 small{font-family:var(--body);letter-spacing:0;text-transform:none;font-weight:500;color:var(--muted);font-size:13px}
+.list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;position:relative;overflow:hidden}
+.item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--stripe)}
+.item.done{opacity:.5} .item.done .t{text-decoration:line-through}
+.check{width:24px;height:24px;border-radius:8px;border:2px solid var(--line);background:transparent;cursor:pointer;margin-top:1px;display:grid;place-items:center;color:var(--surface);padding:0}
+.item.done .check{background:var(--accent);border-color:var(--accent)}
+.t{font-weight:600;min-width:0}
+.meta{display:flex;flex-wrap:wrap;gap:6px 10px;font-size:12.5px;color:var(--muted);margin-top:3px}
+.tag{display:inline-flex;align-items:center;gap:5px;font-weight:600;color:var(--fg)}
+.why{font-size:12px;color:var(--muted);margin-top:4px}
+.why mark{background:var(--accent-soft);color:var(--fg);border-radius:4px;padding:0 3px}
+.when{text-align:right;font-size:13px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.when small{display:block;font-weight:500;color:var(--muted)}
+.empty{color:var(--muted);font-size:14px;padding:8px 2px}
+.how{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.how h2{font-family:var(--display);font-size:19px;margin:0 0 10px;letter-spacing:0;text-transform:none}
+.how ol{margin:0;padding-left:20px;display:grid;gap:6px}
+.how p{margin:10px 0 0;color:var(--muted);font-size:13.5px}
+@media (max-width:380px){.summary b{font-size:24px}}
+@media (prefers-reduced-motion:no-preference){.item{transition:opacity .2s}}
+</style>
+
+<div class="wrap">
+  <div class="demo">Entwurf mit <b>Beispieleinträgen</b>. Annes echte Termine kommen später direkt aus ihrem iCloud-Kalender.</div>
+
+  <header>
+    <h1>Hallo Anne</h1>
+    <p id="today"></p>
+  </header>
+
+  <div class="summary" role="group" aria-label="Nach Dringlichkeit filtern">
+    <button class="sum akut" data-u="akut" aria-pressed="false"><b id="c-akut">0</b><span>Akut</span></button>
+    <button class="sum bald" data-u="bald" aria-pressed="false"><b id="c-bald">0</b><span>Diese Woche</span></button>
+    <button class="sum geplant" data-u="geplant" aria-pressed="false"><b id="c-geplant">0</b><span>Später</span></button>
+  </div>
+
+  <input id="q" class="search" type="search" placeholder="Suchen: Turnbeutel, Arzt, Geschenk …" aria-label="Einträge durchsuchen">
+
+  <div class="chips" id="chips" role="group" aria-label="Kategorien"></div>
+
+  <div id="groups" style="display:grid;gap:22px"></div>
+
+  <div class="how">
+    <h2>So funktioniert es</h2>
+    <ol>
+      <li>Anne trägt wie gewohnt alles in ihren Kalender ein.</li>
+      <li>Alle paar Minuten holt das Dashboard neue Einträge ab.</li>
+      <li>Jeder Eintrag bekommt automatisch eine Kategorie und eine Dringlichkeit.</li>
+      <li>Abhaken geht hier. Der Kalender selbst bleibt unverändert.</li>
+    </ol>
+    <p>Unter jedem Eintrag steht, woran die Kategorie erkannt wurde. So sieht man sofort, wenn etwas falsch einsortiert ist.</p>
+  </div>
+</div>
+
+<script>
+const CATS = {
+  einkauf:   {name:"Einkauf",            color:"#2f9e6b", words:["einkauf","kaufen","milch","brot","windeln","rewe","dm","aldi","edeka","lidl","besorgen"]},
+  kinder:    {name:"Kinder",             color:"#d9822b", words:["kita","schule","turnbeutel","elternabend","hausaufgaben","kinder","schwimmkurs","abholen","bastel","laterne","wechselkleidung"]},
+  termine:   {name:"Arzt & Termine",     color:"#3b7dd8", words:["arzt","kinderarzt","zahnarzt","u-untersuchung","impfung","friseur","termin","physio"]},
+  unterlagen:{name:"Unterlagen & Fristen",color:"#8a5cc7", words:["unterlagen","steuer","versicherung","kündigen","frist","formular","antrag","rechnung","überweisen","vertrag","bis"]},
+  haushalt:  {name:"Haushalt",           color:"#6b8f9e", words:["müll","wäsche","putzen","handwerker","reparatur","staubsauger","heizung","gelbe tonne"]},
+  familie:   {name:"Geburtstage & Feste",color:"#c2407e", words:["geburtstag","geschenk","oma","opa","feier","advent","weihnacht","nikolaus"]},
+  ich:       {name:"Für mich",           color:"#a0846a", words:["yoga","sport","freundin","kaffee","lesen","massage","mädelsabend"]},
+};
+const EXAMPLES = [
+  {t:"Turnbeutel einpacken",           d:0,  time:"07:30"},
+  {t:"Milch, Brot, Windeln (Rewe)",    d:0},
+  {t:"Kinderarzt U-Untersuchung",      d:1,  time:"09:15"},
+  {t:"Kfz-Versicherung kündigen bis 30.11.", d:-1, note:"Frist"},
+  {t:"Elternabend Kita",               d:2,  time:"19:30"},
+  {t:"Geschenk für Omas Geburtstag besorgen", d:3},
+  {t:"Gelbe Tonne rausstellen",        d:1,  time:"20:00"},
+  {t:"Yoga mit Lisa",                  d:4,  time:"18:00"},
+  {t:"Steuerunterlagen an Steuerberater", d:6},
+  {t:"Adventskalender befüllen",       d:11},
+  {t:"Zahnarzt Kontrolle",             d:14, time:"10:40"},
+  {t:"Wechselkleidung Kita auffüllen", d:5},
+  {t:"Nikolausgeschenke kaufen",       d:12},
+  {t:"Handwerker Heizung",             d:9,  time:"08:00"},
+  {t:"Schwimmkurs anmelden",           d:8},
+];
+
+const today = new Date(); today.setHours(0,0,0,0);
+const fmtLong = new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"numeric",month:"long"});
+const fmtShort = new Intl.DateTimeFormat("de-DE",{weekday:"short",day:"numeric",month:"short"});
+document.getElementById("today").textContent = "Heute ist " + fmtLong.format(today) + ".";
+
+function classify(title){
+  const low = title.toLowerCase();
+  let best = null, hit = null, score = 0;
+  for (const [key,c] of Object.entries(CATS)){
+    for (const w of c.words){
+      if (low.includes(w) && w.length > score){ best = key; hit = w; score = w.length; }
+    }
+  }
+  return {cat: best || "ich", hit};
+}
+function urgency(e){
+  if (e.d <= 1) return "akut";
+  if (e.d <= 7) return "bald";
+  return "geplant";
+}
+function whenLabel(e){
+  if (e.d < 0) return {main:"Überfällig", sub: fmtShort.format(dateOf(e))};
+  if (e.d === 0) return {main:"Heute", sub:e.time || "ganztags"};
+  if (e.d === 1) return {main:"Morgen", sub:e.time || "ganztags"};
+  return {main: fmtShort.format(dateOf(e)), sub: e.time || ""};
+}
+function dateOf(e){ const x = new Date(today); x.setDate(x.getDate()+e.d); return x; }
+
+let done = new Set();
+try { done = new Set(JSON.parse(localStorage.getItem("anne-done")||"[]")); } catch(_){}
+function saveDone(){ try { localStorage.setItem("anne-done", JSON.stringify([...done])); } catch(_){} }
+
+const items = EXAMPLES.map((e,i)=>({...e, id:"e"+i, ...classify(e.t), u:urgency(e)}))
+  .sort((a,b)=>a.d-b.d || (a.time||"99").localeCompare(b.time||"99"));
+
+let fCat = null, fU = null, q = "";
+
+function esc(s){ return s.replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function render(){
+  const open = items.filter(i=>!done.has(i.id));
+  for (const u of ["akut","bald","geplant"]) document.getElementById("c-"+u).textContent = open.filter(i=>i.u===u).length;
+
+  const chips = document.getElementById("chips");
+  chips.innerHTML = `<button class="chip" data-c="" aria-pressed="${!fCat}">Alle <span class="n">${open.length}</span></button>` +
+    Object.entries(CATS).map(([k,c])=>{
+      const n = open.filter(i=>i.cat===k).length;
+      return `<button class="chip" data-c="${k}" aria-pressed="${fCat===k}"><span class="dot" style="background:${c.color}"></span>${c.name} <span class="n">${n}</span></button>`;
+    }).join("");
+
+  const shown = items.filter(i => (!fCat || i.cat===fCat) && (!fU || i.u===fU) && (!q || i.t.toLowerCase().includes(q) || CATS[i.cat].name.toLowerCase().includes(q)));
+  const groups = [
+    ["akut","Akut","heute, morgen oder überfällig","var(--akut)"],
+    ["bald","Diese Woche","in den nächsten 7 Tagen","var(--bald)"],
+    ["geplant","Später","mehr als eine Woche hin","var(--geplant)"],
+  ];
+  document.getElementById("groups").innerHTML = groups.map(([u,label,hint,col])=>{
+    const g = shown.filter(i=>i.u===u);
+    if (fU && fU!==u) return "";
+    return `<section><h2 style="color:${col}">${label} <small>${hint}</small></h2>${
+      g.length ? `<ul class="list">${g.map(itemHTML).join("")}</ul>` : `<div class="empty">Nichts in dieser Ansicht.</div>`
+    }</section>`;
+  }).join("");
+}
+function itemHTML(i){
+  const c = CATS[i.cat], w = whenLabel(i), isDone = done.has(i.id);
+  const why = i.hit ? `Erkannt an <mark>${esc(i.hit)}</mark>` : "Kein Stichwort gefunden, bitte prüfen";
+  const overdue = i.d < 0 ? ' style="color:var(--akut)"' : "";
+  return `<li class="item${isDone?" done":""}" style="--stripe:${c.color}">
+    <button class="check" data-id="${i.id}" aria-label="${isDone?"Wieder öffnen":"Abhaken"}: ${esc(i.t)}">${isDone?"✓":""}</button>
+    <div style="min-width:0"><div class="t">${esc(i.t)}</div>
+      <div class="meta"><span class="tag"><span class="dot" style="background:${c.color}"></span>${c.name}</span><span>Kalender</span></div>
+      <div class="why">${why}</div></div>
+    <div class="when"${overdue}>${w.main}<small>${w.sub}</small></div></li>`;
+}
+
+document.addEventListener("click", ev=>{
+  const chip = ev.target.closest(".chip"); if (chip){ fCat = chip.dataset.c || null; render(); return; }
+  const sum = ev.target.closest(".sum"); if (sum){ fU = fU===sum.dataset.u ? null : sum.dataset.u; document.querySelectorAll(".sum").forEach(b=>b.setAttribute("aria-pressed", b.dataset.u===fU)); render(); return; }
+  const chk = ev.target.closest(".check"); if (chk){ const id = chk.dataset.id; done.has(id)?done.delete(id):done.add(id); saveDone(); render(); }
+});
+document.getElementById("q").addEventListener("input", e=>{ q = e.target.value.trim().toLowerCase(); render(); });
+render();
+</script>
