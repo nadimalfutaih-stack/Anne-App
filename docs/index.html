@@ -153,6 +153,17 @@ function calKey(name){
   if (!CALS[n]) CALS[n] = {name: (name||"Kalender").trim(), v:"--muted"};
   return n;
 }
+// Versteht ISO 8601 und deutsche Kurzbefehl-Formate wie "19.11.26, 10:30" oder "19. November 2026 um 10:30".
+const MONTHS = ["januar","februar","märz","april","mai","juni","juli","august","september","oktober","november","dezember"];
+function parseDate(v){
+  v = (v||"").trim();
+  if (/^\d{4}-\d{2}-\d{2}/.test(v)) return new Date(v);
+  let m = v.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{2,4})(?:\D+(\d{1,2}):(\d{2}))?/);
+  if (!m) { const n = v.toLowerCase().match(/^(\d{1,2})\.\s*([a-zä]+)\s+(\d{4})(?:\D+(\d{1,2}):(\d{2}))?/); if (n && MONTHS.indexOf(n[2]) >= 0) m = [n[0], n[1], String(MONTHS.indexOf(n[2])+1), n[3], n[4], n[5]]; }
+  if (!m) return new Date(NaN);
+  let y = +m[3]; if (y < 100) y += 2000;
+  return new Date(y, +m[2]-1, +m[1], m[4] ? +m[4] : 0, m[5] ? +m[5] : 0);
+}
 function readShortcutData(){
   const m = location.hash.match(/^#d=(.+)$/);
   if (!m) return null;
@@ -164,7 +175,7 @@ function readShortcutData(){
     const hm = d => String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
     return text.split(/\r?\n/).map(l=>{ const sep = l.includes("|") ? "|" : ";"; const p = l.split(sep); while (p.length > 5) { p[1] = p[0] + sep + p[1]; p.shift(); } return p; }).filter(p=>p.length>=5 && p[0].trim()).map(p=>{
       const [t, s, e, ad, cal] = p.map(x=>x.trim());
-      const start = new Date(s), end = new Date(e);
+      const start = parseDate(s), end = parseDate(e);
       if (isNaN(start)) return null;
       const day = new Date(start); day.setHours(0,0,0,0);
       const allDay = /^(ja|yes|true|1)$/i.test(ad);
