@@ -6,18 +6,19 @@
   --bg:#FAF9F6; --card:#FFFFFF; --fg:#172433; --muted:#4B5966; --line:#D5D8DA;
   --next:#FFF1CF; --nav-on:#173653; --nav-on-fg:#FFFFFF; --nav:#E8ECEF; --nav-fg:#172433;
   --today:#C62835; --sun:#FFD24A; --sun-bg:#173653;
+  --ring1:rgba(255,166,77,.55); --ring2:rgba(255,183,102,.38); --ring3:rgba(255,200,130,.25);
   --cal-kalender:#C21878; --cal-privat:#006D73; --cal-arbeit:#BD590D; --cal-nadim:#245EB5;
   --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#101820; --card:#19242E; --fg:#F7F5EF; --muted:#BCC7D0; --line:#41505D;
   --next:#3D3321; --nav-on:#A9D6FF; --nav-on-fg:#10263A; --nav:#293846; --nav-fg:#F7F5EF;
-  --today:#C93645;
+  --today:#C93645; --ring1:rgba(255,210,74,.22); --ring2:rgba(255,210,74,.14); --ring3:rgba(255,210,74,.08);
   --cal-kalender:#F36CB2; --cal-privat:#58C6C3; --cal-arbeit:#FFAA60; --cal-nadim:#82B5FF; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#101820; --card:#19242E; --fg:#F7F5EF; --muted:#BCC7D0; --line:#41505D;
   --next:#3D3321; --nav-on:#A9D6FF; --nav-on-fg:#10263A; --nav:#293846; --nav-fg:#F7F5EF;
-  --today:#C93645;
+  --today:#C93645; --ring1:rgba(255,210,74,.22); --ring2:rgba(255,210,74,.14); --ring3:rgba(255,210,74,.08);
   --cal-kalender:#F36CB2; --cal-privat:#58C6C3; --cal-arbeit:#FFAA60; --cal-nadim:#82B5FF; color-scheme:dark}
 
 /* Auf dem iPhone folgt diese Grundschrift der Einstellung "Größere Schrift" (Standard 17 px).
@@ -32,35 +33,36 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:1.05
 .appbar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:1.059rem}
 .brand svg{width:2rem;height:2rem;flex:none}
-.calbtn{display:inline-flex;align-items:center;min-height:44px;padding:.45rem 1rem;border-radius:999px;background:var(--nav);color:var(--nav-fg);font-weight:600;font-size:1.059rem;text-decoration:none}
+.calbtn{display:inline-flex;align-items:center;min-height:44px;padding:.45rem 1rem;border-radius:14px;background:var(--nav);color:var(--nav-fg);font-weight:600;font-size:1.059rem;text-decoration:none}
 
 .titlebar{display:flex;align-items:center;gap:.7rem;margin-top:1rem}
 h1{font-weight:800;font-size:2.353rem;letter-spacing:-.02em;line-height:1.1;margin:0}
 .daycircle{flex:none;width:2.7rem;height:2.7rem;border-radius:50%;background:var(--today);color:#fff;display:grid;place-items:center;font-weight:700;font-size:1.25rem;font-variant-numeric:tabular-nums}
-.sub{font-size:1.059rem;color:var(--fg);margin-top:.25rem;font-weight:500}
-.greet{font-size:.941rem;color:var(--muted);margin-top:.1rem}
+.sub{font-size:1.235rem;color:var(--fg);margin-top:.3rem;font-weight:400}
+.greet{font-size:1.412rem;color:var(--fg);margin-top:.55rem;font-weight:700;letter-spacing:-.01em}
 
-.nextcard{margin-top:1.1rem;background:var(--next);border-radius:18px;padding:1rem 1.1rem;display:grid;grid-template-columns:6px minmax(0,1fr);gap:.9rem}
-.nextcard .bar{border-radius:3px;background:var(--c)}
-.nextcard .lbl{font-size:.941rem;font-weight:700;color:var(--fg)}
-.nextcard .what{font-size:1.412rem;font-weight:700;line-height:1.2;margin-top:.1rem;overflow-wrap:anywhere}
-.nextcard .tm{font-size:1.059rem;font-weight:600;margin-top:.2rem;font-variant-numeric:tabular-nums}
-.nextcard .cal{font-size:.941rem;color:var(--muted)}
+.nextcard{margin-top:1.1rem;background:var(--next);border-radius:18px;padding:1.1rem 1.25rem;position:relative;overflow:hidden;font-size:1.65rem;font-weight:700;line-height:1.22;letter-spacing:-.01em}
+.nextcard::after{content:"";position:absolute;right:-3.2rem;bottom:-3.2rem;width:9rem;height:9rem;border-radius:50%;background:radial-gradient(circle,var(--ring1) 0 34%,transparent 35% 47%,var(--ring2) 48% 60%,transparent 61% 73%,var(--ring3) 74% 86%,transparent 87%);pointer-events:none}
+.nextcard>div{position:relative;z-index:1;overflow-wrap:anywhere}
+.nextcard .tm{font-variant-numeric:tabular-nums}
 
 .sect{margin-top:1.1rem}
 .sect h2{font-size:1.059rem;font-weight:700;margin:0 0 .45rem .2rem}
-.listcard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:0 1rem}
+.listcard{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
 .list{list-style:none;margin:0;padding:0}
-.row{display:grid;grid-template-columns:4.8rem 6px minmax(0,1fr) auto;gap:.65rem;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--line);min-height:4rem}
+.row{padding-left:max(16px,env(safe-area-inset-left,0px)) !important;padding-right:max(16px,env(safe-area-inset-right,0px)) !important;display:grid;grid-template-columns:4.4rem 5px minmax(0,1fr) auto;gap:.6rem;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--line);min-height:4rem}
 .row:last-child{border-bottom:0}
-.time{font-variant-numeric:tabular-nums;font-size:1.059rem;font-weight:700;line-height:1.25;white-space:nowrap}
+.time{font-variant-numeric:tabular-nums;font-size:1.059rem;font-weight:400;line-height:1.25;white-space:nowrap}
 .time small{display:block;font-size:.941rem;font-weight:400;color:var(--muted)}
-.time.allday{font-size:.941rem;font-weight:500;color:var(--muted)}
-.bar{align-self:stretch;border-radius:3px;background:var(--c)}
+.time.allday{font-size:.941rem;font-weight:400;color:var(--fg)}
+.bar{align-self:stretch;margin-block:.15rem;border-radius:3px;background:var(--c)}
 .t{font-size:1.176rem;font-weight:600;line-height:1.25;overflow-wrap:break-word;hyphens:auto}
-.cal{display:block;font-size:.941rem;font-weight:400;color:var(--muted);margin-top:.1rem}
-.tick{width:2.6rem;height:2.6rem;min-width:44px;min-height:44px;border-radius:50%;border:2.5px solid var(--muted);background:transparent;cursor:pointer;display:grid;place-items:center;padding:0;color:var(--card);font-size:1.2rem;font-weight:800}
-.done .tick{background:var(--fg);border-color:var(--fg)}
+.cal{display:block;font-size:.941rem;font-weight:400;color:var(--muted);margin-top:.05rem}
+.tick{width:2.6rem;height:2.6rem;min-width:44px;min-height:44px;border-radius:50%;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;padding:0;color:var(--card);font-size:1.05rem;font-weight:800;position:relative}
+.tick::before{content:"";position:absolute;inset:.3rem;border-radius:50%;border:2px solid var(--fg)}
+.tick span{position:relative}
+.row>.tick{margin-right:-.4rem}
+.done .tick::before{background:var(--fg)}
 .done .t{color:var(--muted)}
 .done .t .txt{text-decoration:line-through}
 .done .bar{opacity:.35}
@@ -75,7 +77,7 @@ nav div{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(
 /* Sehr große Schrift auf schmalem Bildschirm: Tasten in zwei Reihen, damit kein Wort zerbricht. */
 nav{container:nav/inline-size}
 @container nav (max-width:16.8rem){nav div{grid-template-columns:repeat(2,minmax(0,1fr))}}
-nav button{font:inherit;font-size:1.059rem;font-weight:600;min-height:52px;padding:.5rem .15rem;border-radius:14px;border:0;background:var(--nav);color:var(--nav-fg);cursor:pointer}
+nav button{font:inherit;font-size:1.059rem;font-weight:600;min-height:52px;padding:.5rem .15rem;border-radius:12px;border:0;background:var(--nav);color:var(--nav-fg);cursor:pointer}
 nav button[aria-pressed="true"]{background:var(--nav-on);color:var(--nav-on-fg)}
 button:focus-visible,.search:focus-visible,.calbtn:focus-visible{outline:3px solid var(--nav-on);outline-offset:2px}
 
@@ -174,7 +176,7 @@ function row(i, opts={}){
   const time = i.time ? `<div class="time">${i.time}</div>` : `<div class="time allday">ganztägig</div>`;
   const meta = [opts.when, CALS[i.cal].name, i.hint].filter(Boolean).join(" · ");
   const right = (i.task && !opts.noTick)
-    ? `<button class="tick" data-id="${i.id}" aria-label="${isDone?"Zurückholen":"Abhaken"}: ${esc(i.t)}">${isDone?"✓":""}</button>`
+    ? `<button class="tick" data-id="${i.id}" aria-label="${isDone?"Zurückholen":"Abhaken"}: ${esc(i.t)}"><span>${isDone?"✓":""}</span></button>`
     : "<span></span>";
   const tag = isDone ? `<span class="donetag">✓ Erledigt</span>` : "";
   return `<li class="row${isDone?" done":""}" style="--c:${calVar(i)}">${time}<span class="bar"></span><div class="t"><span class="txt">${esc(i.t)}</span>${tag}<span class="cal">${meta}</span></div>${right}</li>`;
@@ -186,7 +188,7 @@ function dayView(d){
   const next = d===0 ? open.filter(i=>i.time).sort(byTime)[0] : null;
   const rest = open.filter(i=>i!==next);
   let html = "";
-  if (next) html += `<div class="nextcard" style="--c:${calVar(next)}"><span class="bar"></span><div><div class="lbl">Als Nächstes</div><div class="what">${esc(next.t)}</div><div class="tm">${next.time}–${next.end} Uhr</div><div class="cal">${[CALS[next.cal].name, next.hint].filter(Boolean).join(" · ")}</div></div></div>`;
+  if (next) html += `<div class="nextcard"><div>Als Nächstes:<br>${esc(next.t)},<br><span class="tm">${next.time}–${next.end} Uhr</span></div></div>`;
   if (!open.length){
     const nxt = items.filter(i=>i.d>d).sort((a,b)=>a.d-b.d)[0];
     html += `<div class="sect"><div class="listcard"><div class="empty">${d===0?"Heute steht nichts mehr an.":"Morgen ist frei. Genieß den Tag!"}${nxt?`<small>Danach: ${esc(nxt.t)}, ${fmtWd.format(dateOf(nxt.d))}</small>`:""}</div></div></div>`;
