@@ -136,6 +136,8 @@ const HINTS = [
 //   Beginn/Ende im ISO-8601-Format (z. B. 2026-11-19T10:30:00+01:00), Ganztägig = Ja/Nein.
 // Der Teil nach # wird nie an einen Server geschickt; die Termine bleiben auf dem iPhone.
 // Ohne #d= zeigt die Seite Beispieldaten wie in der Bildvorlage (Uhr fest auf 08:00).
+// Nur Annes Kalender anzeigen; Feiertage, Geburtstage und andere Kalender auf dem iPhone bleiben weg.
+const SHOW_CALS = ["kalender","privat","arbeit","nadim"];
 function calKey(name){
   const n = (name||"").trim().toLowerCase();
   if (!CALS[n]) CALS[n] = {name: (name||"Kalender").trim(), v:"--muted"};
@@ -157,7 +159,7 @@ function readShortcutData(){
       const day = new Date(start); day.setHours(0,0,0,0);
       const allDay = /^(ja|yes|true|1)$/i.test(ad);
       return { t, d: Math.round((day - t0) / 864e5), time: allDay ? undefined : hm(start), end: allDay || isNaN(end) ? undefined : hm(end), cal: calKey(cal), key: t + "@" + s };
-    }).filter(x=>x && x.d >= 0);
+    }).filter(x=>x && x.d >= 0 && SHOW_CALS.includes(x.cal));
   } catch(_) { return null; }
 }
 const LIVE = readShortcutData();
