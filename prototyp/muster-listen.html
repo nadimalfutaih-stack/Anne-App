@@ -1,0 +1,131 @@
+<title>Mein Tag Listen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: zwei helle Handy-Bildschirme (Salbei) nebeneinander: links Startseite mit Listen-Kacheln, rechts eine geöffnete Liste "Einkauf", nach Datum sortiert. */
+:root{--bg:#eceef1;--fg:#172433;--muted:#4B5966;--card:#fff;--line:#d5d8da;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111418;--fg:#f2f2ee;--muted:#b8bfc6;--card:#1b2026;--line:#353c44;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111418;--fg:#f2f2ee;--muted:#b8bfc6;--card:#1b2026;--line:#353c44;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.45}
+.wrap{max-width:900px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1.page{font-size:26px;margin:0;letter-spacing:-.01em}
+.lead{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:28px;margin-top:24px;align-items:start}
+.col{display:grid;gap:10px;justify-items:center}
+.col h2{margin:0;font-size:18px;justify-self:start}
+.col h2 small{font-weight:500;color:var(--muted);font-size:14px}
+
+.phone{width:100%;max-width:340px;height:700px;border-radius:40px;border:9px solid #0a0a0a;overflow:hidden;position:relative;box-shadow:0 18px 40px rgba(0,0,0,.18);background:#EEF4EF;color:#1D2A36}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 14px 0}
+.top{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;gap:7px;align-items:center;font-weight:600;font-size:13px;color:#56616c}
+.sun{width:22px;height:22px;border-radius:6px;background:#173653;display:grid;place-items:center}
+.sun i{display:block;width:7px;height:7px;border-radius:50%;background:#FFD24A;box-shadow:0 0 0 2.5px #173653,0 0 0 3.5px #FFD24A}
+.cal{border:1px solid #DCE6DE;border-radius:999px;padding:5px 11px;font-weight:600;font-size:12.5px;background:#fff}
+.back{font-weight:600;font-size:13.5px;color:#173653}
+.ttl{display:flex;align-items:center;gap:9px;margin-top:12px}
+.ttl b{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.dot{width:28px;height:28px;border-radius:50%;background:#C62835;color:#fff;display:grid;place-items:center;font-weight:700;font-size:13.5px}
+.ttl span{font-size:15px;color:#5b6670}
+.hi{font-size:15px;font-weight:600;margin-top:2px}
+.sec{font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#56616c;margin:14px 2px 6px}
+
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.tile{background:#fff;border-radius:13px;padding:8px 9px;display:grid;gap:1px;position:relative}
+.tile .ic{font-size:17px;line-height:1}
+.tile b{font-size:13px}
+.tile small{font-size:11.5px;color:#56616c}
+.tile .n{position:absolute;top:7px;right:8px;font-size:12px;font-weight:700;color:#fff;background:var(--c);border-radius:999px;min-width:20px;height:20px;display:grid;place-items:center;padding:0 5px}
+.tile.on{outline:2px solid #173653}
+
+.next{margin-top:10px;background:#FFE7A3;border-radius:14px;padding:9px 12px;display:grid;grid-template-columns:4px 1fr;gap:10px}
+.next .lbl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8A5A00}
+.next .w{font-size:16px;font-weight:700;line-height:1.2}
+.list{background:#fff;border-radius:14px;overflow:hidden}
+.row{display:grid;grid-template-columns:44px 4px 1fr 26px;gap:9px;align-items:center;padding:8px 12px;border-bottom:1px solid #DCE6DE;min-height:44px}
+.row:last-child{border-bottom:0}
+.bar{align-self:stretch;border-radius:3px;background:#C21878}
+.tm{font-size:12.5px;color:#3d4954}.t{font-size:14.5px;font-weight:600;line-height:1.2}.t small{display:block;font-weight:400;color:#66717b;font-size:11.5px}
+.ck{width:22px;height:22px;border-radius:50%;border:2px solid #1d2a36;justify-self:end}
+.row.done .t{color:#8a949d;text-decoration:line-through}.row.done .ck{background:#1d2a36}
+.day{font-size:13px;font-weight:700;margin:12px 2px 5px}
+.day small{font-weight:500;color:#56616c}
+.nav{margin-top:auto;margin-inline:-14px;padding:8px 14px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#EEF4EF;border-top:1px solid #DCE6DE}
+.nav span{display:grid;place-items:center;height:40px;border-radius:12px;background:#fff;font-weight:600;font-size:13px}
+.nav span.on{background:#173653;color:#fff}
+
+.note{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px;max-width:64ch}
+.note h2{font-size:17px;margin:0 0 8px}
+.note ol{margin:0;padding-left:20px;display:grid;gap:6px}
+.note p{margin:10px 0 0;color:var(--muted);font-size:14px}
+</style>
+
+<div class="wrap">
+  <h1 class="page">Muster: Listen nach Kategorie</h1>
+  <p class="lead">Oben auf der Startseite stehen kleine Kacheln für jede Liste. Antippen öffnet die Liste mit allen offenen Einträgen dieser Art, nach Datum sortiert. Die Einträge sind Beispiele aus Annes Kalender.</p>
+
+  <div class="grid">
+    <div class="col">
+      <h2>Startseite <small>· mit Listen-Kacheln</small></h2>
+      <div class="phone"><div class="scr">
+        <div class="top"><div class="brand"><div class="sun"><i></i></div>Mein Tag</div><div class="cal">Kalender öffnen</div></div>
+        <div class="ttl"><b>Heute</b><div class="dot">20</div><span>Freitag, 20. Nov.</span></div>
+        <div class="hi">Guten Morgen, Anne!</div>
+        <div class="sec">Meine Listen</div>
+        <div class="tiles">
+          <div class="tile" style="--c:#2f8a57"><span class="ic">🛒</span><b>Einkauf</b><small>bis Mo.</small><span class="n">4</span></div>
+          <div class="tile" style="--c:#c0587e"><span class="ic">🎁</span><b>Geschenke</b><small>bis Sa.</small><span class="n">3</span></div>
+          <div class="tile" style="--c:#d0782b"><span class="ic">🎒</span><b>Kinder</b><small>heute</small><span class="n">2</span></div>
+          <div class="tile" style="--c:#6a59b8"><span class="ic">📄</span><b>Unterlagen</b><small>heute</small><span class="n">2</span></div>
+          <div class="tile" style="--c:#c03c3c"><span class="ic">🩺</span><b>Arzt</b><small>Do.</small><span class="n">1</span></div>
+          <div class="tile" style="--c:#7b8790"><span class="ic">📌</span><b>Sonstiges</b><small>heute</small><span class="n">5</span></div>
+        </div>
+        <div class="next"><div class="bar"></div><div><div class="lbl">Als Nächstes · 08:00</div><div class="w">Pandas Bescheid geben Reha</div></div></div>
+        <div class="sec">Heute</div>
+        <div class="list">
+          <div class="row"><div class="tm">09:00</div><div class="bar"></div><div class="t">Edyta/Ina<small>Sonstiges</small></div><div class="ck"></div></div>
+          <div class="row"><div class="tm">11:00</div><div class="bar"></div><div class="t">Make up DM<small>Einkauf</small></div><div class="ck"></div></div>
+          <div class="row"><div class="tm">13:00</div><div class="bar"></div><div class="t">Yum Yum kaufen<small>Einkauf</small></div><div class="ck"></div></div>
+        </div>
+        <div class="nav"><span class="on">Heute</span><span>Morgen</span><span>Danach</span><span>Suchen</span></div>
+      </div></div>
+    </div>
+
+    <div class="col">
+      <h2>Liste „Einkauf“ <small>· nach Datum</small></h2>
+      <div class="phone"><div class="scr">
+        <div class="top"><div class="back">‹ Zurück</div><div class="cal">Kalender öffnen</div></div>
+        <div class="ttl"><b>🛒 Einkauf</b></div>
+        <div class="hi" style="font-weight:500;color:#56616c">4 Dinge offen</div>
+
+        <div class="day">Heute <small>· Freitag, 20. Nov.</small></div>
+        <div class="list">
+          <div class="row done"><div class="tm">11:00</div><div class="bar"></div><div class="t">Make up DM<small>erledigt</small></div><div class="ck"></div></div>
+          <div class="row"><div class="tm">13:00</div><div class="bar"></div><div class="t">Yum Yum kaufen</div><div class="ck"></div></div>
+          <div class="row"><div class="tm">19:00</div><div class="bar"></div><div class="t">Action kleine Geschenke</div><div class="ck"></div></div>
+        </div>
+        <div class="day">Samstag <small>· 21. Nov.</small></div>
+        <div class="list">
+          <div class="row"><div class="tm">ganzt.</div><div class="bar"></div><div class="t">Milch und Brot</div><div class="ck"></div></div>
+        </div>
+        <div class="day">Montag <small>· 23. Nov.</small></div>
+        <div class="list">
+          <div class="row"><div class="tm">10:00</div><div class="bar"></div><div class="t">Windeln Rossmann</div><div class="ck"></div></div>
+        </div>
+        <div class="nav"><span>Heute</span><span>Morgen</span><span>Danach</span><span>Suchen</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <h2>So würde es funktionieren</h2>
+    <ol>
+      <li>Oben auf der Startseite stehen <b>Kacheln</b> für jede Liste, mit der Anzahl offener Einträge und wann der nächste fällig ist.</li>
+      <li>Antippen öffnet die <b>Liste</b>: alle Einträge dieser Art aus den nächsten zwei Wochen, nach Tag sortiert. Abhaken geht direkt dort.</li>
+      <li>Was keiner Liste zugeordnet werden kann, landet unter <b>Sonstiges</b>, damit nichts verloren geht.</li>
+      <li>Die Zuordnung lerne ich aus Annes echten Einträgen: DM, Action, Müller → Einkauf, Geschenk → Geschenke, Schule, Hermine → Kinder, Unterschrift, Ausdruck → Unterlagen.</li>
+    </ol>
+    <p>Die Kacheln, ihre Namen und Symbole kannst du dir aussuchen.</p>
+  </div>
+</div>
