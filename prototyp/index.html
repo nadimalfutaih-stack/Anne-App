@@ -144,16 +144,33 @@ function calKey(name){
   return n;
 }
 // Versteht ISO 8601 und deutsche Kurzbefehl-Formate wie "19.11.26, 10:30" oder "19. November 2026 um 10:30".
-const MONTHS = ["januar","februar","märz","april","mai","juni","juli","august","september","oktober","november","dezember"];
+const MONTHS = {jan:1,januar:1,january:1,feb:2,februar:2,february:2,mär:3,mrz:3,märz:3,mar:3,march:3,apr:4,april:4,mai:5,may:5,jun:6,juni:6,june:6,jul:7,juli:7,july:7,aug:8,august:8,sep:9,sept:9,september:9,okt:10,oct:10,oktober:10,october:10,nov:11,november:11,dez:12,dec:12,dezember:12,december:12};
+// Versteht ISO 8601 und typische Kurzbefehl-Formate: "20.11.26, 10:30", "20. Nov. 2026 um 10:30", "Heute um 10:30" …
 function parseDate(v){
   v = (v||"").trim();
   if (/^\d{4}-\d{2}-\d{2}/.test(v)) return new Date(v);
-  let m = v.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{2,4})(?:\D+(\d{1,2}):(\d{2}))?/);
-  if (!m) { const n = v.toLowerCase().match(/^(\d{1,2})\.\s*([a-zä]+)\s+(\d{4})(?:\D+(\d{1,2}):(\d{2}))?/); if (n && MONTHS.indexOf(n[2]) >= 0) m = [n[0], n[1], String(MONTHS.indexOf(n[2])+1), n[3], n[4], n[5]]; }
-  if (!m) return new Date(NaN);
-  let y = +m[3]; if (y < 100) y += 2000;
-  return new Date(y, +m[2]-1, +m[1], m[4] ? +m[4] : 0, m[5] ? +m[5] : 0);
+  const low = v.toLowerCase().replace(/\u202f|\u00a0/g," ");
+  const tm = low.match(/(\d{1,2})[:.](\d{2})(?:\s*(am|pm|vorm\.|nachm\.))?\s*(?:uhr)?\s*$/) || low.match(/(?:um|at|,)\s*(\d{1,2})[:.](\d{2})(?:\s*(am|pm))?/);
+  let hh = tm ? +tm[1] : 0, mm = tm ? +tm[2] : 0;
+  if (tm && tm[3] && /pm|nachm/.test(tm[3]) && hh < 12) hh += 12;
+  if (tm && tm[3] && /am|vorm/.test(tm[3]) && hh === 12) hh = 0;
+  const base = new Date(); base.setHours(0,0,0,0);
+  const rel = {heute:0, today:0, morgen:1, tomorrow:1, gestern:-1, yesterday:-1, "übermorgen":2};
+  for (const [w,o] of Object.entries(rel)) if (low.startsWith(w)) { const x = new Date(base); x.setDate(x.getDate()+o); x.setHours(hh,mm); return x; }
+  let m = low.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{2,4})?/);
+  let d, mo, y;
+  if (m) { d=+m[1]; mo=+m[2]; y=m[3]?+m[3]:base.getFullYear(); }
+  else {
+    const n = low.match(/^(?:[a-zä]+\.?,?\s+)?(\d{1,2})\.?\s+([a-zä]+)\.?\s*(\d{4})?/) || null;
+    const e = !n && low.match(/^(?:[a-z]+,?\s+)?([a-z]+)\.?\s+(\d{1,2}),?\s*(\d{4})?/);
+    if (n && MONTHS[n[2]]) { d=+n[1]; mo=MONTHS[n[2]]; y=n[3]?+n[3]:base.getFullYear(); }
+    else if (e && MONTHS[e[1]]) { d=+e[2]; mo=MONTHS[e[1]]; y=e[3]?+e[3]:base.getFullYear(); }
+    else return new Date(NaN);
+  }
+  if (y < 100) y += 2000;
+  return new Date(y, mo-1, d, hh, mm);
 }
+const STATS = {lines:0, dates:0, shown:0, sampleStart:"", cals:[]};
 function readShortcutData(){
   const m = location.hash.match(/^#d=(.+)$/);
   if (!m) return null;
@@ -163,14 +180,21 @@ function readShortcutData(){
     const text = new TextDecoder().decode(Uint8Array.from(atob(b), c=>c.charCodeAt(0)));
     const t0 = new Date(); t0.setHours(0,0,0,0);
     const hm = d => String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
-    return text.split(/\r?\n/).map(l=>{ const sep = l.includes("|") ? "|" : ";"; const p = l.split(sep); while (p.length > 5) { p[1] = p[0] + sep + p[1]; p.shift(); } return p; }).filter(p=>p.length>=5 && p[0].trim()).map(p=>{
+    const rows = text.split(/\r?\n/).map(l=>{ const sep = l.includes("|") ? "|" : ";"; const p = l.split(sep); while (p.length > 5) { p[1] = p[0] + sep + p[1]; p.shift(); } return p; }).filter(p=>p.length>=5 && p[0].trim());
+    STATS.lines = rows.length;
+    const out = rows.map(p=>{
       const [t, s, e, ad, cal] = p.map(x=>x.trim());
+      if (!STATS.sampleStart) STATS.sampleStart = s;
+      if (!STATS.cals.includes(cal)) STATS.cals.push(cal);
       const start = parseDate(s), end = parseDate(e);
       if (isNaN(start)) return null;
+      STATS.dates++;
       const day = new Date(start); day.setHours(0,0,0,0);
-      const allDay = /^(ja|yes|true|1)$/i.test(ad);
+      const allDay = /^(ja|yes|true|1|wahr)$/i.test(ad);
       return { t, d: Math.round((day - t0) / 864e5), time: allDay ? undefined : hm(start), end: allDay || isNaN(end) ? undefined : hm(end), cal: calKey(cal), key: t + "@" + s };
     }).filter(x=>x && x.d >= 0 && SHOW_CALS.includes(x.cal));
+    STATS.shown = out.length;
+    return out;
   } catch(_) { return null; }
 }
 const LIVE = readShortcutData();
@@ -197,6 +221,12 @@ const dateOf = d => { const x = new Date(today); x.setDate(x.getDate()+d); retur
 const hr = Math.floor(nowMin/60);
 document.getElementById("hello").textContent = hr < 11 ? "Guten Morgen, Anne!" : hr < 18 ? "Hallo Anne!" : "Guten Abend, Anne!";
 document.getElementById("demo").hidden = !DEMO;
+// Hilfe bei der Einrichtung: Kommen Termine an, werden aber nicht angezeigt, steht unten ein kurzer Hinweis.
+if (LIVE && STATS.lines && STATS.shown === 0) {
+  const n = document.createElement("div"); n.className = "demo"; n.style.marginTop = "1.2rem";
+  n.textContent = `Hinweis: ${STATS.lines} Termine empfangen, ${STATS.dates} mit lesbarem Datum. Beispiel-Datum: „${STATS.sampleStart}“. Kalender: ${STATS.cals.join(", ")}.`;
+  document.querySelector(".wrap").appendChild(n);
+}
 
 // Abhaken nur bei Erledigungen ohne Uhrzeit, nicht bei Geburtstagen
 const hintFor = t => { const l = t.toLowerCase(); const f = HINTS.find(c=>c.words.some(w=>l.includes(w))); return f ? f.name : ""; };
