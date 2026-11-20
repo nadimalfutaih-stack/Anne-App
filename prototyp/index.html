@@ -309,13 +309,17 @@ function render(){
   const v = document.getElementById("view");
   let html = "";
   if (view==="heute"){ setHeader("Heute", 0); html += tilesHTML() + (cat ? catView() : dayView(0)); }
-  else if (view==="morgen"){ setHeader("Morgen", 1); html += dayView(1); }
+  else if (view==="morgen"){ setHeader("Morgen", 1); html += tilesHTML() + (cat ? catView() : dayView(1)); }
   else if (view==="danach"){
     setHeader("Danach", null);
+    html += tilesHTML();
+    if (cat) { html += catView(); }
+    else {
     const later = items.filter(i=>i.d>1).sort((a,b)=>a.d-b.d || byTime(a,b));
     const byDay = {}; later.forEach(i=>{ (byDay[i.d] ||= []).push(i); });
     html += Object.entries(byDay).map(([d,l])=>`<div class="sect"><h2>${fmtWd.format(dateOf(+d))}</h2><div class="listcard"><ul class="list">${l.map(i=>row(i,{noTick:true})).join("")}</ul></div></div>`).join("")
       || `<div class="sect"><div class="listcard"><div class="empty">Danach steht noch nichts im Kalender.</div></div></div>`;
+    }
   } else {
     setHeader("Suchen", null);
     html += `<input id="q" class="search" type="search" placeholder="Was suchst du? z. B. Turnbeutel" aria-label="Im Kalender suchen" value="${esc(q)}">`;
