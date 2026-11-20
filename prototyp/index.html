@@ -170,7 +170,7 @@ function parseDate(v){
   if (y < 100) y += 2000;
   return new Date(y, mo-1, d, hh, mm);
 }
-const STATS = {lines:0, dates:0, shown:0, sampleStart:"", cals:[]};
+const STATS = {lines:0, dates:0, shown:0, sampleStart:"", cals:[], chars:0, err:""};
 function readShortcutData(){
   const m = location.hash.match(/^#d=(.+)$/);
   if (!m) return null;
@@ -180,6 +180,7 @@ function readShortcutData(){
     const text = new TextDecoder().decode(Uint8Array.from(atob(b), c=>c.charCodeAt(0)));
     const t0 = new Date(); t0.setHours(0,0,0,0);
     const hm = d => String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+    STATS.chars = text.length;
     const rows = text.split(/\r?\n/).map(l=>{ const sep = l.includes("|") ? "|" : ";"; const p = l.split(sep); while (p.length > 5) { p[1] = p[0] + sep + p[1]; p.shift(); } return p; }).filter(p=>p.length>=5 && p[0].trim());
     STATS.lines = rows.length;
     const out = rows.map(p=>{
@@ -195,7 +196,7 @@ function readShortcutData(){
     }).filter(x=>x && x.d >= 0 && SHOW_CALS.includes(x.cal));
     STATS.shown = out.length;
     return out;
-  } catch(_) { return null; }
+  } catch(err) { STATS.err = String(err && err.message || err); return []; }
 }
 const LIVE = readShortcutData();
 const DEMO = !LIVE;
@@ -222,9 +223,9 @@ const hr = Math.floor(nowMin/60);
 document.getElementById("hello").textContent = hr < 11 ? "Guten Morgen, Anne!" : hr < 18 ? "Hallo Anne!" : "Guten Abend, Anne!";
 document.getElementById("demo").hidden = !DEMO;
 // Hilfe bei der Einrichtung: Kommen Termine an, werden aber nicht angezeigt, steht unten ein kurzer Hinweis.
-if (LIVE && STATS.lines && STATS.shown === 0) {
+if (LIVE && STATS.shown === 0) {
   const n = document.createElement("div"); n.className = "demo"; n.style.marginTop = "1.2rem";
-  n.textContent = `Hinweis: ${STATS.lines} Termine empfangen, ${STATS.dates} mit lesbarem Datum. Beispiel-Datum: „${STATS.sampleStart}“. Kalender: ${STATS.cals.join(", ")}.`;
+  n.textContent = `Hinweis (Version 3): ${STATS.chars} Zeichen, ${STATS.lines} Termine empfangen, ${STATS.dates} mit lesbarem Datum. Beispiel-Datum: „${STATS.sampleStart}“. Kalender: ${STATS.cals.join(", ") || "–"}.${STATS.err ? " Fehler: " + STATS.err : ""}`;
   document.querySelector(".wrap").appendChild(n);
 }
 
