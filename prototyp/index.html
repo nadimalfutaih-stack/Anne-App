@@ -246,6 +246,8 @@ const save = () => { try { localStorage.setItem("meintag-done", JSON.stringify([
 
 let view = "heute", q = "", lastDone = null, toastTimer = null, cat = null;
 const catOf = i => i.hint || OTHER.name;
+// Kacheln zeigen nur die Einträge der gewählten Ansicht: Heute = heute (ohne vorbei), Morgen = morgen, Danach = ab übermorgen.
+const inView = i => view==="morgen" ? i.d===1 : view==="danach" ? i.d>1 : (i.d===0 && (!i.time || mins(i.end||i.time) >= nowMin));
 const esc = s => s.replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mins = t => { const [a,b] = t.split(":").map(Number); return a*60+b; };
 const byTime = (a,b) => (a.time?1:0)-(b.time?1:0) || (a.time||"").localeCompare(b.time||"");
@@ -287,21 +289,21 @@ function setHeader(title, d){
 }
 function tilesHTML(){
   return `<div class="tilesec"><div class="tiles">${TILES.map(t=>{
-    const open = items.filter(i=>catOf(i)===t.name && !done.has(i.id));
+    const open = items.filter(i=>inView(i) && catOf(i)===t.name && !done.has(i.id));
     const first = open.slice().sort((a,b)=>a.d-b.d || byTime(a,b))[0];
-    const when = !first ? "nichts offen" : first.d===0 ? "heute" : first.d===1 ? "morgen" : "bis " + fmtShortDay.format(dateOf(first.d));
+    const when = !first ? "nichts offen" : first.d===0 ? "heute" : first.d===1 ? "morgen" : "ab " + fmtShortDay.format(dateOf(first.d));
     return `<button class="tile${cat===t.name?" on":""}" data-cat="${t.name}" style="--tc:${t.color}" aria-pressed="${cat===t.name}"><span class="ic" aria-hidden="true">${t.icon}</span><b>${t.name}</b><small>${when}</small>${open.length?`<span class="n">${open.length}</span>`:""}</button>`;
   }).join("")}</div></div>`;
 }
 function catView(){
   const t = TILES.find(x=>x.name===cat);
-  const list = items.filter(i=>catOf(i)===cat).sort((a,b)=>a.d-b.d || byTime(a,b));
+  const list = items.filter(i=>inView(i) && catOf(i)===cat).sort((a,b)=>a.d-b.d || byTime(a,b));
   const open = list.filter(i=>!done.has(i.id)), fin = list.filter(i=>done.has(i.id));
-  const when = i => i.d===0 ? "Heute" : i.d===1 ? "Morgen" : fmtWd.format(dateOf(i.d));
+  const when = i => i.d>1 ? fmtWd.format(dateOf(i.d)) : "";
   let html = `<div class="cathead"><h2>${t.icon} ${t.name}</h2><span>${open.length} offen</span><button class="catclose" data-cat="${t.name}">Alle zeigen</button></div>`;
   html += open.length
     ? `<div class="sect"><div class="listcard"><ul class="list">${open.map(i=>row({...i, task:true},{when:when(i), noHint:true})).join("")}</ul></div></div>`
-    : `<div class="sect"><div class="listcard"><div class="empty">Alles erledigt. Schön!</div></div></div>`;
+    : `<div class="sect"><div class="listcard"><div class="empty">${fin.length ? "Alles erledigt. Schön!" : "Hier steht nichts an."}</div></div></div>`;
   if (fin.length) html += `<div class="sect"><h2>Erledigt</h2><div class="listcard"><ul class="list">${fin.map(i=>row({...i, task:true},{when:when(i), noHint:true})).join("")}</ul></div></div>`;
   return html;
 }
