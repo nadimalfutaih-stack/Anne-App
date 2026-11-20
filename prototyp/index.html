@@ -79,6 +79,17 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .pick span{font-size:1.4rem}
 .pick b{display:block;font-size:1rem}
 .pick small{display:block;color:var(--muted);font-size:.9rem}
+.neu-hinweis{margin-top:.75rem;background:var(--next);border-radius:12px;padding:.55rem .75rem;display:flex;gap:.55rem;align-items:center;font-size:.93rem}
+.neu-hinweis b{display:block;font-size:.98rem}
+.neu-hinweis small{display:block;color:#6B5A33;font-size:.82rem}
+.neu-hinweis button{margin-left:auto;font:inherit;font-size:.86rem;font-weight:700;color:#6B5A33;background:rgba(255,255,255,.6);border:0;border-radius:999px;min-height:40px;padding:.3rem .8rem;cursor:pointer;white-space:nowrap}
+.tile.has-neu{box-shadow:inset 0 0 0 2px #FFD24A}
+.tile.on.has-neu{outline-color:var(--nav-on)}
+.tile .nb{position:absolute;bottom:.4rem;right:.45rem;font-size:.66rem;font-weight:800;letter-spacing:.04em;background:#FFD24A;color:#1D2A36;border-radius:999px;padding:.05rem .4rem}
+.row.neu{background:#FFF6D9}
+.neutag{display:inline-block;margin-left:.35rem;font-size:.66rem;font-weight:800;letter-spacing:.04em;background:#FFD24A;color:#1D2A36;border-radius:999px;padding:.05rem .4rem;vertical-align:.1rem}
+nav button{position:relative}
+nav button.punkt::after{content:"";position:absolute;top:.35rem;right:.6rem;width:.55rem;height:.55rem;border-radius:50%;background:#FFD24A;box-shadow:0 0 0 2px var(--nav)}
 .cathead{display:flex;align-items:center;gap:.6rem;margin-top:.9rem;flex-wrap:wrap}
 .cathead h2{margin:0;font-size:1.3rem;font-weight:800}
 .cathead span{color:var(--muted);font-size:.93rem}
@@ -309,6 +320,23 @@ const items = EXAMPLES.map((e,i)=>{ const cats = catsFor(e.t); return {...e, id:
 let done = new Set();
 try { done = new Set(JSON.parse(localStorage.getItem("meintag-done")||"[]")); } catch(_){}
 const save = () => { try { localStorage.setItem("meintag-done", JSON.stringify([...done])); } catch(_){} };
+// ---------- Neue Einträge ----------
+// Merkt sich auf diesem iPhone, welche Einträge schon gesehen wurden. Beim allerersten Öffnen ist nichts "neu".
+let gesehen = null, zuletzt = null;
+try { const g = localStorage.getItem("meintag-gesehen"); if (g) gesehen = new Set(JSON.parse(g)); zuletzt = +localStorage.getItem("meintag-zuletzt") || null; } catch(_){}
+const NEU = new Set(gesehen ? items.filter(i => !gesehen.has(i.id)).map(i => i.id) : []);
+let bestaetigt = new Set();   // in dieser Sitzung schon angeschaut
+const seitText = zuletzt ? (() => { const z = new Date(zuletzt), h = new Date(); h.setHours(0,0,0,0); const t = new Date(z); t.setHours(0,0,0,0);
+  const tag = t - h === 0 ? "heute" : t - h === -864e5 ? "gestern" : new Intl.DateTimeFormat("de-DE",{weekday:"long"}).format(z);
+  return "seit " + tag + ", " + z.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}) + " Uhr"; })() : "";
+const istNeu = i => NEU.has(i.id);
+const offenNeu = list => list.filter(i => NEU.has(i.id) && !bestaetigt.has(i.id));
+function merken(){ try {
+  const ids = items.filter(i => !NEU.has(i.id) || bestaetigt.has(i.id)).map(i => i.id);
+  localStorage.setItem("meintag-gesehen", JSON.stringify(ids));
+  localStorage.setItem("meintag-zuletzt", String(Date.now()));
+} catch(_){} }
+function bestaetigen(list){ list.forEach(i => bestaetigt.add(i.id)); merken(); }
 
 let view = "heute", q = "", lastDone = null, toastTimer = null, cat = null;
 const inCat = (i, name) => name === OTHER.name ? !i.cats.length : i.cats.includes(name);
@@ -327,7 +355,8 @@ function row(i, opts={}){
     ? `<button class="tick" data-id="${i.id}" aria-label="${isDone?"Zurückholen":"Abhaken"}: ${esc(i.t)}"><span>${isDone?"✓":""}</span></button>`
     : "<span></span>";
   const tag = isDone ? `<span class="donetag">✓ Erledigt</span>` : "";
-  return `<li class="row${isDone?" done":""}" style="--c:${calVar(i)}">${time}<span class="bar"></span><div class="t"><span class="txt">${esc(i.t)}</span>${tag}<span class="cal">${meta}</span></div>${right}</li>`;
+  const nt = istNeu(i) && !isDone ? `<span class="neutag">NEU</span>` : "";
+  return `<li class="row${isDone?" done":""}${nt?" neu":""}" style="--c:${calVar(i)}">${time}<span class="bar"></span><div class="t"><span class="txt">${esc(i.t)}</span>${nt}${tag}<span class="cal">${meta}</span></div>${right}</li>`;
 }
 function dayView(d){
   const list = items.filter(i=>i.d===d);
@@ -354,19 +383,33 @@ function setHeader(title, d){
   document.getElementById("hello").hidden = d !== 0;
 }
 function tilesHTML(){
-  return `<div class="tilesec"><div class="tiles">${TILES.map(t=>{
+  return neuHinweis() + `<div class="tilesec"><div class="tiles">${TILES.map(t=>{
     const open = items.filter(i=>inView(i) && inCat(i, t.name) && !done.has(i.id));
     const first = open.slice().sort((a,b)=>a.d-b.d || byTime(a,b))[0];
     const when = !first ? "nichts offen" : first.d===0 ? "heute" : first.d===1 ? "morgen" : "ab " + fmtShortDay.format(dateOf(first.d));
-    return `<button class="tile${cat===t.name?" on":""}" data-cat="${t.name}" style="--tc:${t.color}" aria-pressed="${cat===t.name}"><span class="ic" aria-hidden="true">${t.icon}</span><b>${t.name}</b><small>${when}</small>${open.length?`<span class="n">${open.length}</span>`:""}</button>`;
+    const nn = offenNeu(open).length;
+    return `<button class="tile${cat===t.name?" on":""}${nn?" has-neu":""}" data-cat="${t.name}" style="--tc:${t.color}" aria-pressed="${cat===t.name}"><span class="ic" aria-hidden="true">${t.icon}</span><b>${t.name}</b><small>${when}</small>${open.length?`<span class="n">${open.length}</span>`:""}${nn?`<span class="nb">${nn} NEU</span>`:""}</button>`;
   }).join("")}</div></div>`;
+}
+function neuHinweis(){
+  const n = offenNeu(items).length;
+  if (!n) return "";
+  return `<div class="neu-hinweis" role="status"><span aria-hidden="true">✨</span><div><b>${n} ${n===1?"neuer Eintrag":"neue Einträge"}</b>${seitText?`<small>${seitText}</small>`:""}</div><button id="gesehen">Gesehen ✓</button></div>`;
+}
+function navPunkte(){
+  const offen = offenNeu(items);
+  document.querySelectorAll("nav button").forEach(b => {
+    const v = b.dataset.v; const has = v==="morgen" ? offen.some(i=>i.d===1) : v==="danach" ? offen.some(i=>i.d>1) : v==="heute" ? offen.some(i=>i.d===0) : false;
+    b.classList.toggle("punkt", has && v !== view);
+  });
 }
 function catView(){
   const t = TILES.find(x=>x.name===cat);
-  const list = items.filter(i=>inView(i) && inCat(i, cat)).sort((a,b)=>a.d-b.d || byTime(a,b));
+  const list = items.filter(i=>inView(i) && inCat(i, cat)).sort((a,b)=>(istNeu(b)-istNeu(a)) || a.d-b.d || byTime(a,b));
+  const nNeu = list.filter(i=>istNeu(i) && !done.has(i.id)).length;
   const open = list.filter(i=>!done.has(i.id)), fin = list.filter(i=>done.has(i.id));
   const when = i => i.d>1 ? fmtWd.format(dateOf(i.d)) : "";
-  let html = `<div class="cathead"><h2>${t.icon} ${t.name}</h2><span>${open.length} offen</span><button class="catclose" data-cat="${t.name}">Alle zeigen</button></div>`;
+  let html = `<div class="cathead"><h2>${t.icon} ${t.name}</h2><span>${open.length} offen${nNeu ? ` · ${nNeu} neu` : ""}</span><button class="catclose" data-cat="${t.name}">Alle zeigen</button></div>`;
   html += open.length
     ? `<div class="sect"><div class="listcard"><ul class="list">${open.map(i=>row({...i, task:true},{when:when(i), noHint:true})).join("")}</ul></div></div>`
     : `<div class="sect"><div class="listcard"><div class="empty">${fin.length ? "Alles erledigt. Schön!" : "Hier steht nichts an."}</div></div></div>`;
@@ -481,6 +524,7 @@ function mikroTippen(){
   try { erkennung.start(); } catch(_){ /* läuft schon */ }
 }
 function render(){
+  setTimeout(navPunkte, 0);
   const v = document.getElementById("view");
   let html = "";
   if (view==="heute"){ setHeader("Heute", 0); html += tilesHTML() + voiceHTML() + (cat ? catView() : pickHint("heute")); }
@@ -519,7 +563,10 @@ document.addEventListener("click", ev=>{
   const nb = ev.target.closest("nav button");
   if (nb){ view = nb.dataset.v; cat = null; vMsg = ""; gesagt = ""; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b===nb)); render(); window.scrollTo(0,0); if (view==="suchen") document.getElementById("q").focus(); return; }
   const tl = ev.target.closest(".tile,.catclose");
-  if (tl){ cat = (cat===tl.dataset.cat) ? null : tl.dataset.cat; vMsg = ""; gesagt = ""; render(); return; }
+  if (tl){ cat = (cat===tl.dataset.cat) ? null : tl.dataset.cat; vMsg = ""; gesagt = "";
+    if (cat) bestaetigen(items.filter(i => inView(i) && inCat(i, cat)));
+    render(); return; }
+  if (ev.target.closest("#gesehen")){ bestaetigen(items); render(); return; }
   const tk = ev.target.closest(".tick");
   if (tk){
     const id = tk.dataset.id;
@@ -535,5 +582,6 @@ document.addEventListener("click", ev=>{
 const navEl = document.querySelector("nav");
 const setNavH = () => document.documentElement.style.setProperty("--navh", navEl.getBoundingClientRect().height + "px");
 try { new ResizeObserver(setNavH).observe(navEl); } catch(_){} setNavH();
+if (!gesehen) merken();
 render();
 </script>
