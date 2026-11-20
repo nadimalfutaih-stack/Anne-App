@@ -1,0 +1,113 @@
+<title>Mein Tag Sprachknopf</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: drei Handy-Bildschirme (am Handy untereinander): Ruhe, Hört zu, Ergebnis. Bildschirme in festen Salbei-Farben wie Screenshots. */
+:root{--bg:#EEF4EF;--fg:#1D2A36;--muted:#56616C;--card:#fff;--line:#DCE6DE;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141a16;--fg:#eef2ee;--muted:#a9b4ac;--card:#1e2620;--line:#2f3a32;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141a16;--fg:#eef2ee;--muted:#a9b4ac;--card:#1e2620;--line:#2f3a32;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:26px;margin:0}
+.lead{color:var(--muted);margin:6px 0 0;max-width:64ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:26px;margin-top:24px;align-items:start}
+.col{display:grid;gap:10px;justify-items:center}
+.col h2{margin:0;font-size:18px;justify-self:start}
+.col h2 small{font-weight:500;color:var(--muted);font-size:14px}
+
+.phone{width:100%;max-width:340px;height:700px;border-radius:40px;border:9px solid #0a0a0a;overflow:hidden;position:relative;background:#EEF4EF;color:#1D2A36;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 14px 0}
+.top{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;gap:7px;align-items:center;font-weight:600;font-size:13px;color:#56616c}
+.sun{width:22px;height:22px;border-radius:6px;background:#173653;display:grid;place-items:center}
+.sun i{display:block;width:7px;height:7px;border-radius:50%;background:#FFD24A;box-shadow:0 0 0 2.5px #173653,0 0 0 3.5px #FFD24A}
+.cal{border:1px solid #DCE6DE;border-radius:999px;padding:5px 11px;font-weight:600;font-size:12.5px;background:#fff}
+.ttl{display:flex;align-items:center;gap:9px;margin-top:12px}
+.ttl b{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.dot{width:28px;height:28px;border-radius:50%;background:#C62835;color:#fff;display:grid;place-items:center;font-weight:700;font-size:13.5px}
+.ttl span{font-size:15px;color:#5b6670}
+.hi{font-size:15px;font-weight:600;margin-top:2px}
+.tiles{margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tile{background:#fff;border-radius:12px;padding:6px 8px;display:grid;gap:0;position:relative}
+.tile .ic{font-size:15px;line-height:1.1}
+.tile b{font-size:12px}
+.tile small{font-size:10.5px;color:#56616c}
+.tile .n{position:absolute;top:5px;right:6px;font-size:10.5px;font-weight:700;color:#fff;background:var(--c);border-radius:999px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
+.tile.on{outline:2px solid #173653;outline-offset:-2px}
+
+/* Sprachknopf im Stil der Wein-App, in Mein-Tag-Farben */
+.voice{display:grid;justify-items:center;gap:6px;margin-top:16px}
+.mikro{position:relative;width:84px;height:84px;border-radius:50%;background:#173653;color:#fff;border:0;display:grid;place-items:center;
+  box-shadow:inset 0 0 0 3px #173653,inset 0 0 0 4px rgba(255,210,74,.55),0 10px 24px rgba(23,54,83,.28)}
+.mikro svg{width:34px;height:34px;fill:currentColor}
+.mikro::before,.mikro::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #FFD24A;opacity:0;pointer-events:none}
+.mikro.an{animation:atmen 2.4s ease-in-out infinite}
+.mikro.an::before{animation:ring 2.4s ease-out infinite}
+.mikro.an::after{animation:ring 2.4s ease-out 1.2s infinite}
+@keyframes atmen{50%{transform:scale(1.04)}}
+@keyframes ring{0%{inset:0;opacity:.9}100%{inset:-26px;opacity:0}}
+@media (prefers-reduced-motion:reduce){.mikro.an,.mikro.an::before,.mikro.an::after{animation:none}.mikro.an::before{opacity:1;inset:-8px}}
+.hinweis{font-size:13.5px;font-weight:600;color:#56616c;text-align:center}
+.hinweis.hoert{color:#8A5A00}
+.gesagt{font-size:14px;color:#1D2A36;background:#fff;border-radius:999px;padding:5px 12px;font-style:italic}
+
+.list{margin-top:8px;background:#fff;border-radius:12px;overflow:hidden}
+.cathead{display:flex;align-items:center;gap:6px;margin-top:10px;font-weight:800;font-size:16px}
+.cathead small{font-weight:500;color:#56616c;font-size:12.5px}
+.row{display:grid;grid-template-columns:40px 4px 1fr 24px;gap:8px;align-items:center;padding:7px 10px;border-bottom:1px solid #DCE6DE;min-height:40px}
+.row:last-child{border-bottom:0}
+.bar{align-self:stretch;border-radius:3px;background:#C21878}
+.tm{font-size:11.5px;color:#3d4954}.t{font-size:13.5px;font-weight:600;line-height:1.2}.t small{display:block;font-weight:400;color:#66717b;font-size:11px}
+.ck{width:20px;height:20px;border-radius:50%;border:2px solid #1d2a36}
+.nav{margin-top:auto;margin-inline:-14px;padding:8px 14px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#EEF4EF;border-top:1px solid #DCE6DE}
+.nav span{display:grid;place-items:center;height:40px;border-radius:12px;background:#fff;font-weight:600;font-size:13px}
+.nav span.on{background:#173653;color:#fff}
+
+.note{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px;max-width:64ch}
+.note h2{font-size:17px;margin:0 0 8px}
+.note ul{margin:0;padding-left:20px;display:grid;gap:4px}
+</style>
+
+<div class="wrap">
+  <h1>Muster: Sprachknopf für „Mein Tag“</h1>
+  <p class="lead">Wie in der Wein-App ein großer runder Knopf, mittig unter den Kästchen, in den Farben von „Mein Tag“. Links in Ruhe, in der Mitte beim Zuhören, rechts das Ergebnis. Die Einträge sind Beispiele.</p>
+
+  <div class="grid">
+    <div class="col"><h2>1 · In Ruhe</h2><div class="phone"><div class="scr" data-screen="ruhe"></div></div></div>
+    <div class="col"><h2>2 · Hört zu <small>· Ringe gehen nach außen</small></h2><div class="phone"><div class="scr" data-screen="hoert"></div></div></div>
+    <div class="col"><h2>3 · Ergebnis <small>· „Was muss ich kaufen?“</small></h2><div class="phone"><div class="scr" data-screen="ergebnis"></div></div></div>
+  </div>
+
+  <div class="note">
+    <h2>Was man sagen kann</h2>
+    <ul>
+      <li>„Einkauf“ oder „Was muss ich kaufen?“: öffnet das Kästchen Einkauf</li>
+      <li>„Was ist morgen?“: springt auf Morgen</li>
+      <li>„Arzt nächste Woche“: Danach, Kästchen Arzt</li>
+      <li>„Turnbeutel“ oder „Hermine“: sucht genau diese Einträge</li>
+      <li>Nicht verstanden: „Das habe ich nicht verstanden. Versuch es noch einmal.“</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const MIC = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>';
+const TILES = [["🛒","Einkauf","#2F8A57",3],["🎁","Geschenke","#C0587E",1],["🎒","Kinder","#D0782B",2],["📄","Unterlagen","#6A59B8",1],["🩺","Arzt","#C03C3C",1],["🏠","Haushalt","#8A6D4B",1],["👭","Treffen","#2E86AB",1],["💆‍♀️","Für mich","#A0568F",1],["📌","Sonstiges","#7B8790",1]];
+const head = `<div class="top"><div class="brand"><div class="sun"><i></i></div>Mein Tag</div><div class="cal">Kalender öffnen</div></div>
+  <div class="ttl"><b>Heute</b><div class="dot">20</div><span>Freitag, 20. Nov.</span></div><div class="hi">Guten Morgen, Anne!</div>`;
+const tiles = on => `<div class="tiles">${TILES.map(([i,n,c,k])=>`<div class="tile${on===n?" on":""}" style="--c:${c}"><span class="ic">${i}</span><b>${n}</b><small>heute</small><span class="n">${k}</span></div>`).join("")}</div>`;
+const nav = `<div class="nav"><span class="on">Heute</span><span>Morgen</span><span>Danach</span><span>Suchen</span></div>`;
+const S = {
+  ruhe: head + tiles() + `<div class="voice"><button class="mikro" aria-label="Sprechen">${MIC}</button><div class="hinweis">Tippen und sprechen</div></div>` + nav,
+  hoert: head + tiles() + `<div class="voice"><button class="mikro an" aria-label="Hört zu">${MIC}</button><div class="hinweis hoert">Ich höre zu …</div><div class="gesagt">„Was muss ich kaufen?“</div></div>` + nav,
+  ergebnis: head + tiles("Einkauf") + `<div class="voice" style="margin-top:10px"><button class="mikro" style="width:56px;height:56px" aria-label="Sprechen">${MIC}</button></div>
+    <div class="cathead">🛒 Einkauf <small>3 offen</small></div>
+    <div class="list">
+      <div class="row"><div class="tm">13:00</div><div class="bar"></div><div class="t">Yum Yum kaufen<small>Kalender</small></div><div class="ck"></div></div>
+      <div class="row"><div class="tm">19:00</div><div class="bar"></div><div class="t">Spüli<small>Kalender</small></div><div class="ck"></div></div>
+      <div class="row"><div class="tm">ganzt.</div><div class="bar"></div><div class="t">Süßes kaufen Hermine schule<small>Kalender · Kinder</small></div><div class="ck"></div></div>
+    </div>` + nav,
+};
+document.querySelectorAll("[data-screen]").forEach(el => el.innerHTML = S[el.dataset.screen]);
+</script>
