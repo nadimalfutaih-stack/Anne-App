@@ -11,24 +11,24 @@
 <title>Mein Tag</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-/* Layout: wie Annes Apple-Kalender. Oben App-Name mit Sonne, großer Titel mit rotem Tageskreis, gelbe Karte "Als Nächstes", weiße Listenkarte, vier Tasten unten. */
+/* Layout (kompakt): kleine Kopfzeile, "Heute" + roter Tageskreis + Datum in einer Reihe, schmale Karte "Als Nächstes", dichte Liste, vier Tasten unten. */
 :root{
   --bg:#FAF9F6; --card:#FFFFFF; --fg:#172433; --muted:#4B5966; --line:#D5D8DA;
   --next:#FFF1CF; --nav-on:#173653; --nav-on-fg:#FFFFFF; --nav:#E8ECEF; --nav-fg:#172433;
   --today:#C62835; --sun:#FFD24A; --sun-bg:#173653;
-  --ring1:rgba(255,166,77,.55); --ring2:rgba(255,183,102,.38); --ring3:rgba(255,200,130,.25);
+  --next-lbl:#8A5A00;
   --cal-kalender:#C21878; --cal-privat:#006D73; --cal-arbeit:#BD590D; --cal-nadim:#245EB5;
   --font:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#101820; --card:#19242E; --fg:#F7F5EF; --muted:#BCC7D0; --line:#41505D;
   --next:#3D3321; --nav-on:#A9D6FF; --nav-on-fg:#10263A; --nav:#293846; --nav-fg:#F7F5EF;
-  --today:#C93645; --ring1:rgba(255,210,74,.22); --ring2:rgba(255,210,74,.14); --ring3:rgba(255,210,74,.08);
+  --today:#C93645; --next-lbl:#FFD24A;
   --cal-kalender:#F36CB2; --cal-privat:#58C6C3; --cal-arbeit:#FFAA60; --cal-nadim:#82B5FF; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#101820; --card:#19242E; --fg:#F7F5EF; --muted:#BCC7D0; --line:#41505D;
   --next:#3D3321; --nav-on:#A9D6FF; --nav-on-fg:#10263A; --nav:#293846; --nav-fg:#F7F5EF;
-  --today:#C93645; --ring1:rgba(255,210,74,.22); --ring2:rgba(255,210,74,.14); --ring3:rgba(255,210,74,.08);
+  --today:#C93645; --next-lbl:#FFD24A;
   --cal-kalender:#F36CB2; --cal-privat:#58C6C3; --cal-arbeit:#FFAA60; --cal-nadim:#82B5FF; color-scheme:dark}
 
 /* Auf dem iPhone folgt diese Grundschrift der Einstellung "Größere Schrift" (Standard 17 px).
@@ -41,35 +41,36 @@ body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:1.05
 .demo{font-size:.82rem;color:var(--muted);border:1px dashed var(--line);border-radius:10px;padding:.4rem .7rem;margin-bottom:.8rem}
 
 .appbar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:1.059rem}
-.brand svg{width:2rem;height:2rem;flex:none}
-.calbtn{display:inline-flex;align-items:center;min-height:44px;padding:.45rem 1rem;border-radius:14px;background:var(--nav);color:var(--nav-fg);font-weight:600;font-size:1.059rem;text-decoration:none}
+.brand{display:flex;align-items:center;gap:.5rem;font-weight:600;font-size:.93rem;color:var(--muted)}
+.brand svg{width:1.57rem;height:1.57rem;flex:none}
+.calbtn{display:inline-flex;align-items:center;min-height:40px;padding:.3rem .85rem;border-radius:999px;border:1px solid var(--line);color:var(--fg);font-weight:600;font-size:.9rem;text-decoration:none}
 
-.titlebar{display:flex;align-items:center;gap:.7rem;margin-top:1rem}
-h1{font-weight:800;font-size:min(2.353rem,11vw);letter-spacing:-.02em;line-height:1.1;margin:0}
-.daycircle{flex:none;width:2.7rem;height:2.7rem;border-radius:50%;background:var(--today);color:#fff;display:grid;place-items:center;font-weight:700;font-size:1.25rem;font-variant-numeric:tabular-nums}
-.sub{font-size:1.235rem;color:var(--fg);margin-top:.3rem;font-weight:400}
-.greet{font-size:1.412rem;color:var(--fg);margin-top:.55rem;font-weight:700;letter-spacing:-.01em}
+.titlebar{display:flex;align-items:center;flex-wrap:wrap;gap:.3rem .6rem;margin-top:.7rem}
+h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height:1.1;margin:0}
+.daycircle{flex:none;width:2rem;height:2rem;border-radius:50%;background:var(--today);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.96rem;font-variant-numeric:tabular-nums}
+.sub{font-size:1.07rem;color:var(--muted);font-weight:400}
+.greet{font-size:1.07rem;color:var(--fg);margin-top:.1rem;font-weight:600}
 
-.nextcard{margin-top:1.1rem;background:var(--next);border-radius:18px;padding:1.1rem 1.25rem;position:relative;overflow:hidden;font-size:min(1.65rem,7.2vw);font-weight:700;line-height:1.22;letter-spacing:-.01em}
-.nextcard::after{content:"";position:absolute;right:-3.2rem;bottom:-3.2rem;width:9rem;height:9rem;border-radius:50%;background:radial-gradient(circle,var(--ring1) 0 34%,transparent 35% 47%,var(--ring2) 48% 60%,transparent 61% 73%,var(--ring3) 74% 86%,transparent 87%);pointer-events:none}
-.nextcard>div{position:relative;z-index:1;overflow-wrap:anywhere}
-.nextcard .tm{font-variant-numeric:tabular-nums}
+.nextcard{margin-top:.85rem;background:var(--next);border-radius:14px;padding:.7rem .85rem;display:grid;grid-template-columns:4px minmax(0,1fr);gap:.7rem}
+.nextcard .bar{margin:0}
+.nextcard .lbl{font-size:.82rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--next-lbl);font-variant-numeric:tabular-nums}
+.nextcard .w{font-size:1.21rem;font-weight:700;line-height:1.2;margin-top:.05rem;overflow-wrap:anywhere}
+.nextcard .m{font-size:.93rem;color:var(--muted)}
 
-.sect{margin-top:1.1rem}
+.sect{margin-top:.7rem}
 .sect h2{font-size:1.059rem;font-weight:700;margin:0 0 .45rem .2rem}
 .listcard{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
 .list{list-style:none;margin:0;padding:0}
-.row{padding-left:max(16px,env(safe-area-inset-left,0px)) !important;padding-right:max(16px,env(safe-area-inset-right,0px)) !important;display:grid;grid-template-columns:4.4rem 5px minmax(0,1fr) auto;gap:.6rem;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--line);min-height:4rem}
+.row{padding-left:max(16px,env(safe-area-inset-left,0px)) !important;padding-right:max(16px,env(safe-area-inset-right,0px)) !important;display:grid;grid-template-columns:3.6rem 4px minmax(0,1fr) auto;gap:.6rem;align-items:center;padding:.3rem 0;border-bottom:1px solid var(--line);min-height:3.43rem}
 .row:last-child{border-bottom:0}
-.time{font-variant-numeric:tabular-nums;font-size:1.059rem;font-weight:400;line-height:1.25;white-space:nowrap}
+.time{font-variant-numeric:tabular-nums;font-size:.93rem;font-weight:400;line-height:1.25;white-space:nowrap}
 .time small{display:block;font-size:.941rem;font-weight:400;color:var(--muted)}
-.time.allday{font-size:.941rem;font-weight:400;color:var(--fg)}
+.time.allday{font-size:.86rem;font-weight:400;color:var(--fg)}
 .bar{align-self:stretch;margin-block:.15rem;border-radius:3px;background:var(--c)}
-.t{font-size:1.176rem;font-weight:600;line-height:1.25;overflow-wrap:break-word;hyphens:auto}
-.cal{display:block;font-size:.941rem;font-weight:400;color:var(--muted);margin-top:.05rem}
+.t{font-size:1.07rem;font-weight:600;line-height:1.25;overflow-wrap:break-word;hyphens:auto}
+.cal{display:block;font-size:.86rem;font-weight:400;color:var(--muted);margin-top:.05rem}
 .tick{width:2.6rem;height:2.6rem;min-width:44px;min-height:44px;border-radius:50%;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;padding:0;color:var(--card);font-size:1.05rem;font-weight:800;position:relative}
-.tick::before{content:"";position:absolute;inset:.3rem;border-radius:50%;border:2px solid var(--fg)}
+.tick::before{content:"";position:absolute;inset:.55rem;border-radius:50%;border:2px solid var(--fg)}
 .tick span{position:relative}
 .row>.tick{margin-right:-.4rem}
 .done .tick::before{background:var(--fg)}
@@ -82,12 +83,12 @@ h1{font-weight:800;font-size:min(2.353rem,11vw);letter-spacing:-.02em;line-heigh
 .cheer{font-weight:600;font-size:.941rem;margin:0 0 .45rem .2rem;color:var(--muted)}
 .search{width:100%;font:inherit;font-size:1.176rem;min-height:52px;padding:.7rem 1rem;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--fg);margin-top:1.1rem}
 
-nav{position:fixed;z-index:20;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:.55rem max(16px,env(safe-area-inset-right,0px)) calc(.55rem + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+nav{position:fixed;z-index:20;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:.45rem max(16px,env(safe-area-inset-right,0px)) calc(.55rem + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 nav div{max-width:600px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem}
 /* Sehr große Schrift auf schmalem Bildschirm: Tasten in zwei Reihen, damit kein Wort zerbricht. */
 nav{container:nav/inline-size}
 @container nav (max-width:16.8rem){nav div{grid-template-columns:repeat(2,minmax(0,1fr))}}
-nav button{font:inherit;font-size:1.059rem;font-weight:600;min-height:52px;padding:.5rem .15rem;border-radius:12px;border:0;background:var(--nav);color:var(--nav-fg);cursor:pointer}
+nav button{font:inherit;font-size:.96rem;font-weight:600;min-height:44px;padding:.5rem .15rem;border-radius:12px;border:0;background:var(--nav);color:var(--nav-fg);cursor:pointer}
 nav button[aria-pressed="true"]{background:var(--nav-on);color:var(--nav-on-fg)}
 button:focus-visible,.search:focus-visible,.calbtn:focus-visible{outline:3px solid var(--nav-on);outline-offset:2px}
 
@@ -113,8 +114,7 @@ button:focus-visible,.search:focus-visible,.calbtn:focus-visible{outline:3px sol
     <a class="calbtn" href="calshow:">Kalender öffnen</a>
   </div>
 
-  <div class="titlebar"><h1 id="title">Heute</h1><div class="daycircle" id="circle" aria-hidden="true"></div></div>
-  <div class="sub" id="sub"></div>
+  <div class="titlebar"><h1 id="title">Heute</h1><div class="daycircle" id="circle" aria-hidden="true"></div><div class="sub" id="sub"></div></div>
   <div class="greet" id="hello"></div>
   <main id="view"></main>
 </div>
@@ -227,6 +227,7 @@ const EXAMPLES = LIVE || [
 const today = new Date(); today.setHours(0,0,0,0);
 const now = new Date();
 const nowMin = DEMO ? 8*60 : now.getHours()*60 + now.getMinutes();
+const fmtHead = new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"numeric",month:"short"});
 const fmtWd = new Intl.DateTimeFormat("de-DE",{weekday:"long",day:"numeric",month:"long"});
 const dateOf = d => { const x = new Date(today); x.setDate(x.getDate()+d); return x; };
 const hr = Math.floor(nowMin/60);
@@ -270,7 +271,7 @@ function dayView(d){
   const next = d===0 ? open.filter(i=>i.time).sort(byTime)[0] : null;
   const rest = open.filter(i=>i!==next);
   let html = "";
-  if (next) html += `<div class="nextcard"><div>Als Nächstes:<br>${esc(next.t)},<br><span class="tm">${next.time}–${next.end} Uhr</span></div></div>`;
+  if (next) html += `<div class="nextcard"><span class="bar" style="background:${calVar(next)}"></span><div><div class="lbl">Als Nächstes · ${next.time}${next.end?"–"+next.end:""}</div><div class="w">${esc(next.t)}</div><div class="m">${[CALS[next.cal].name, next.hint].filter(Boolean).join(" · ")}</div></div></div>`;
   if (!open.length){
     const nxt = items.filter(i=>i.d>d).sort((a,b)=>a.d-b.d)[0];
     html += `<div class="sect"><div class="listcard"><div class="empty">${d===0?"Heute steht nichts mehr an.":"Morgen ist frei. Genieß den Tag!"}${nxt?`<small>Danach: ${esc(nxt.t)}, ${fmtWd.format(dateOf(nxt.d))}</small>`:""}</div></div></div>`;
@@ -284,7 +285,7 @@ function setHeader(title, d){
   document.getElementById("title").textContent = title;
   const c = document.getElementById("circle");
   c.hidden = d !== 0; c.textContent = today.getDate();
-  document.getElementById("sub").textContent = d === null ? "" : fmtWd.format(dateOf(d));
+  document.getElementById("sub").textContent = d === null ? "" : fmtHead.format(dateOf(d));
   document.getElementById("hello").hidden = d !== 0;
 }
 function render(){
