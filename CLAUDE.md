@@ -22,7 +22,9 @@ Eigenständiges Projekt von Nadim für seine Frau Anne. Hat nichts mit der Wein-
 - Kompakter Kopf (Heute + roter Tageskreis + Datum in einer Zeile), hellgelbe Karte „Als Nächstes“.
 - Neun Listen-Kacheln (3 × 3): Einkauf, Geschenke, Kinder, Unterlagen, Arzt, Haushalt, Treffen, Für mich, Sonstiges. Antippen zeigt nur diese Einträge des gewählten Tages, abhakbar.
 - „Heute“, „Morgen“ und „Danach“: zuerst nur die Kacheln, Einträge erst nach Antippen einer Kachel.
-- Kategorie kommt NUR aus dem Titel, nie aus der Uhrzeit (Anne trägt Zeiten willkürlich ein). Schlagwörter in `HINTS`: `words` = Teilwort, `whole` = nur ganzes Wort. Vorrang: Unterlagen → Arzt → Geschenke → Kinder → Treffen → Für mich → Einkauf → Haushalt, sonst Sonstiges.
+- Kategorie kommt NUR aus dem Titel, nie aus der Uhrzeit (Anne trägt Zeiten willkürlich ein). Ein Eintrag kann in MEHRERE Kästchen (Abhaken gilt überall). Schlagwörter in `HINTS`: `words` = Teilwort, `whole` = nur ganzes Wort, `except` = hebt das Kästchen auf, `weak` = zählt nur, wenn sonst nichts passt. Ohne Treffer: Sonstiges.
+- Kindernamen Hermine und Wim zählen als Kinder.
+- Testlisten für die Zuordnung liegen in `tests/` (Format `Titel | Kategorie1, Kategorie2`, `-` = Sonstiges). Nach Änderungen an `HINTS` alle Listen prüfen.
 
 ## Symbol
 

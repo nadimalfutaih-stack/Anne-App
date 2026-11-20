@@ -1,0 +1,21 @@
+# Kimis Testtitel (an 9 Kästchen angepasst)
+Spülmittel | Einkauf
+Rechnung Strom | Unterlagen
+Doc Müller | Arzt, Einkauf?
+Elternsprechtag | Kinder
+Windeln dm | Einkauf
+Geb Anja | Geschenke
+Zahnpasta | Einkauf
+Rezept Apotheke | Arzt
+Saturn Fernseher | Einkauf
+Tagebuch | Für mich
+Blumenkohl | Einkauf
+Geburtstagskarte basteln | Geschenke
+Kontoauszug | Unterlagen
+U-Untersuchung Mia | Arzt, Kinder
+Schulranzen kaufen | Kinder, Einkauf
+Packstation | Einkauf
+Elster | Unterlagen
+Keller aufräumen | Haushalt
+Admin Zugang | -
+Gebühren | Unterlagen

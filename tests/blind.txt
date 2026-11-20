@@ -1,0 +1,151 @@
+# Blindtest
+Klopapier | Einkauf
+Spüli + Schwämme | Einkauf
+Rossmann shampoo | Einkauf
+Hundefutter Fressnapf | Einkauf
+milch eier butter | Einkauf
+Kaffeepads | Einkauf
+Ikea Rücksendung | Einkauf
+zalando retoure | Einkauf
+Paket abholen Packstation | Einkauf
+Amazon Ladekabel bestellen | Einkauf
+Persil | Einkauf
+lidl brötchen | Einkauf
+Kaufland Wocheneinkauf | Einkauf
+Getränke holen | Einkauf
+Tchibo Kaffee | Einkauf
+Katzenstreu | Einkauf
+Hermes Paket beim Nachbarn | Einkauf
+Mascara + Concealer dm | Einkauf
+Netto Angebote | Einkauf
+Batterien AA | Einkauf
+obst gemuese | Einkauf
+Teelichter | Einkauf
+Edeka Hackfleisch | Einkauf
+Zahnarzt 8:30 | Arzt
+Dr. Yilmaz | Arzt
+Physio Rückn | Arzt
+Rezept abholen Praxis | Arzt
+Apotheke Ibu | Arzt
+Frauenärztin Kontrolle | Arzt
+blutabnahme nuechtern | Arzt
+Hautarzt Muttermal | Arzt
+Fielmann Brille abholen | Arzt
+Orthopäde Knie | Arzt
+Grippeimpfung | Arzt
+HNO | Arzt
+Krankengymnastik 16:15 | Arzt
+MRT Radiologie | Arzt
+Kindergeld Antrag | Unterlagen
+Steuererklärung Elster | Unterlagen
+GEZ kündigen | Unterlagen
+Perso verlängern Bürgeramt | Unterlagen
+Überweisung Vermieter | Unterlagen
+Nebenkostenabrechnung prüfen | Unterlagen
+Allianz Schadensmeldung | Unterlagen
+Handyvertrag kuendigen | Unterlagen
+Sparkasse Termin | Unterlagen
+Brief Finanzamt | Unterlagen
+Formular ausdrucken | Unterlagen
+Kopien Geburtsurkunde | Unterlagen
+Lohnsteuerbescheinigung | Unterlagen
+Unterschrift Mietvertrag | Unterlagen
+Geschenk Mama | Geschenke
+Bday Jana | Geschenke
+Gutschein Tante Ruth | Geschenke
+Hochzeit Svenja & Tim | Geschenke
+Karte Oma 80 | Geschenke
+Mitbringsel Gastgeber | Geschenke
+Blumenstrauß Jubiläum | Geschenke
+Polterabend Steffi | Geschenke
+Weihnachtsgeschenke Liste | Geschenke
+Wichteln Büro | Geschenke
+Taufgeschenk | Geschenke
+Glueckwunschkarte Kollegin | Geschenke
+JGA Sarah | Geschenke
+Elternabnd 19:30 | Kinder
+Turnbeutel!! | Kinder
+Hausis kontrollieren | Kinder
+Schwimmkurs Emil | Kinder
+Lehrersprechtag | Kinder
+Wandertag Brotdose | Kinder
+Klassenfahrt Geld mitgeben | Kinder
+Hort abholen 16 uhr | Kinder
+Fussball training Jonas | Kinder
+Laternenumzug | Kinder
+Schulfotos | Kinder
+Klavierunterricht | Kinder
+OGS Ferienprogramm | Kinder
+Vorlesetag Klasse 2b | Kinder
+Kaffee mit Bine | Treffen
+Mädelsabend | Treffen
+Kino mit Nadim | Treffen
+Essen bei Schwiegereltern | Treffen
+Mama anrufen | Treffen
+Brunch Lisa | Treffen
+Spieleabend Nachbarn | Treffen
+Besuch Tante Gerda | Treffen
+Facetime Oma | Treffen
+Italiener mit Carmen | Treffen
+Date night | Treffen
+Stammtisch | Treffen
+Spazieren mit Anja | Treffen
+Frühstück Kollegen | Treffen
+Friseur Strähnchen | Für mich
+Nägel auffüllen | Für mich
+Yoga | Für mich
+Pilates 18h | Für mich
+Kosmetikerin | Für mich
+Massage 15:00 | Für mich
+Sauna | Für mich
+joggen | Für mich
+Tagebuch schreiben | Für mich
+Wimpernlifting | Für mich
+Lesen!! Buch fertig | Für mich
+Fitnessstudio | Für mich
+Malkurs | Für mich
+Gelbe Tonne raus | Haushalt
+Bettwäsche wechseln | Haushalt
+Fenster putzen | Haushalt
+Keller ausmisten | Haushalt
+Heizungsableser 8-12 | Haushalt
+Klempner wg Abfluss | Haushalt
+Auto TÜV | Haushalt
+Reifenwechsel | Haushalt
+Tanken | Haushalt
+Rasen mähen | Haushalt
+bügeln | Haushalt
+Kühlschrank abtauen | Haushalt
+Sperrmüll anmelden | Haushalt
+Schornsteinfeger | Haushalt
+Garderobe aufbauen | Haushalt
+Yvonne | -
+14:30 | -
+Nadim | -
+!!! | -
+Bernd?? | -
+nicht vergessen | -
+Frau Schmitz | -
+wichtig | -
+xx | -
+Termin 10h | -
+Urlaub | -
+Feiertag | -
+Hamburg | -
+Zeitumstellung | -
+Stromausfall 9-13 | -
+Süßigkeiten Schulfest kaufen | Einkauf, Kinder
+Kinderarzt U11 Jonas | Arzt, Kinder
+Krankmeldung Schule | Unterlagen, Kinder
+Geschenk Kindergeburtstag Paul | Geschenke, Kinder
+Torte bestellen Bäcker Geburtstag | Einkauf, Geschenke
+Arztbrief abholen Kardiologe | Arzt, Unterlagen
+Brille Krankenkasse einreichen | Arzt, Unterlagen
+Yogamatte bestellen | Einkauf, Für mich
+Kaffee mit Jule nach Friseur | Treffen, Für mich
+Malerfarbe Baumarkt | Einkauf, Haushalt
+Autoversicherung wechseln | Unterlagen, Haushalt
+Elternbrief unterschreiben | Kinder, Unterlagen
+Bastelladen Laterne Material | Einkauf, Kinder
+Geburtstag Steffi Kino | Geschenke, Treffen
+Hochzeit Tine Kleid kaufen | Einkauf, Geschenke

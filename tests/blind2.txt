@@ -1,0 +1,121 @@
+# Blindtest 2
+rossmann windeln | Einkauf
+Aldi Hafermilch | Einkauf
+Edeka Bestellung abholen | Einkauf
+Ikea Kallax Einsätze | Einkauf
+Fressnapf Katzenstreu | Einkauf
+Obi Silikon besorgen | Einkauf
+zalando retoure!! | Einkauf
+Hermes Paket abholen | Einkauf
+Spuelmaschinentabs | Einkauf
+Brot Kamps | Einkauf
+Tchibo Thermoskanne | Einkauf
+Lidl Angebot Heißluftfritteuse | Einkauf
+Duschgel nachkaufen | Einkauf
+avocados u limetten | Einkauf
+Müllbeutel 60l | Einkauf
+Deichmann Gummistiefel | Einkauf
+Amazon Rücksendung Mixer | Einkauf
+Kerzen Depot | Einkauf
+Brita Kartuschen | Einkauf
+Hautarzt Dr. Kessler | Arzt
+Orthopäde 8:30 | Arzt
+augenarzt termin machen | Arzt
+Rezept abholen Hausarzt | Arzt
+Blutabnahme nuechtern! | Arzt
+Frauenarzt Vorsorge | Arzt
+Apotheke Ibu | Arzt
+Fielmann Brille abholen | Arzt
+Osteopathie | Arzt
+MRT Knie Radiologie | Arzt
+Grippeimpfung | Arzt
+Kfz Steuer überweisen | Unterlagen
+Elterngeldantrag abschicken | Unterlagen
+Bürgeramt Reisepass | Unterlagen
+AOK Formular | Unterlagen
+Handyvertrag kündigen | Unterlagen
+nebenkostenabrechnung prüfen | Unterlagen
+Sparkasse Termin Kredit | Unterlagen
+Rundfunkbeitrag | Unterlagen
+Wohngeld Unterlagen kopieren | Unterlagen
+Haftpflicht Schaden melden | Unterlagen
+Perso verlängern | Unterlagen
+Gutschein für Tanja | Geschenke
+Hochzeit Lisa u Ben | Geschenke
+Polterabend | Geschenke
+Karte Oma 80. | Geschenke
+Taufe Geschenk Mila | Geschenke
+Wichteln Büro | Geschenke
+Jubiläum Schwiegereltern | Geschenke
+Blumen Mitbringsel Sabine | Geschenke
+Gluckwunschkarte Kollegin | Geschenke
+Silberhochzeit Tante Rita | Geschenke
+Babyparty Jana | Geschenke
+Hort Abholung 16 Uhr | Kinder
+Laternenumzug Kita | Kinder
+Schwimmkurs Seepferdchen | Kinder
+Mathe Arbeit Hermine üben | Kinder
+Lehrersprechtag | Kinder
+Kita Fotograf | Kinder
+U9 Theo | Kinder
+Klassenfahrt Geld | Kinder
+Fussball TuS Training Theo | Kinder
+sachunterricht plakat | Kinder
+Kita Schließtag | Kinder
+Brunch mit Katrin | Treffen
+Pizza bei Giovanni mit Nadim | Treffen
+Kino mit Steffi | Treffen
+Besuch Oma Hilde | Treffen
+Spieleabend Müllers | Treffen
+Sushi mit den Mädels | Treffen
+Telefonat Mama | Treffen
+sandra anrufen | Treffen
+Grillen bei Thomas u Petra | Treffen
+Frühstück Extrablatt Nicole | Treffen
+Schwiegereltern kommen | Treffen
+Nägel auffüllen | Für mich
+Wimpernlifting | Für mich
+Pilates | Für mich
+Zumba Kurs | Für mich
+Sauna Therme | Für mich
+Fitnessstudio | Für mich
+Töpferkurs | Für mich
+Buch weiterlesen | Für mich
+Augenbrauen zupfen | Für mich
+Hot Stone Massage | Für mich
+Joggen! | Für mich
+Waschmaschine entkalken | Haushalt
+Kammerjäger | Haushalt
+Rasen mähen | Haushalt
+Winterreifen Werkstatt | Haushalt
+TÜV Auto | Haushalt
+Schornsteinfeger | Haushalt
+Biomüll raus | Haushalt
+Kuehlschrank abtauen | Haushalt
+heizung entlüften | Haushalt
+Hecke schneiden | Haushalt
+Elektriker Steckdose | Haushalt
+Nadim | -
+Yvonne 15:00 | -
+Petra?? | -
+wichtig!! | -
+nicht vergessen | -
+Ole | -
+14 uhr | -
+Bescheid geben | -
+xx | -
+Frank wegen Sa | -
+Termin | -
+Mo klären | -
+Geschenkpapier kaufen | Einkauf, Geschenke
+Kinderarzt Hermine Fieber | Arzt, Kinder
+Attest Schule Theo | Kinder, Unterlagen
+Wanderschuhe Klassenfahrt kaufen | Einkauf, Kinder
+Krankmeldung Hausarzt Arbeitgeber | Arzt, Unterlagen
+Baumarkt Dübel für Regal | Einkauf, Haushalt
+Essen mit Jenny Geburtstag | Treffen, Geschenke
+Kinderzimmer streichen | Haushalt, Kinder
+Werkstattrechnung bezahlen | Haushalt, Unterlagen
+Laufen mit Bianca | Für mich, Treffen
+Brille Theo Optiker | Arzt, Kinder
+Anmeldung Musikschule Hermine | Kinder, Unterlagen

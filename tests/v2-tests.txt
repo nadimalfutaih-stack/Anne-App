@@ -1,0 +1,305 @@
+# Annes echte Einträge
+Spüli | Einkauf
+Make up DM | Einkauf
+Yum Yum kaufen | Einkauf
+Geschenk müller | Geschenke, Einkauf
+Action kleine Geschenke | Geschenke, Einkauf
+Yvonne Unterschrift | Unterlagen
+Ausdruck Geburtstag ausdrucken unterschreiben und wegschicken | Unterlagen, Geschenke
+Süßes kaufen Hermine schule | Kinder, Einkauf
+Tag der offenen Türe Gesamtschule | Kinder
+Pandas Bescheid geben Reha | Arzt
+Tagebuch | Für mich
+Keller Nadim | Haushalt
+Edyta/Ina | -
+Christine? | -
+10-14 Uhr | -
+# Einkauf – Süßes & Snacks
+Süßmittel | Einkauf
+Süßstoff | Einkauf
+Süßes | Einkauf
+Süßkram für Kino | Einkauf, Treffen
+Gummibärchen | Einkauf
+Haribo | Einkauf
+Schokolade | Einkauf
+Kinder Riegel | Einkauf
+Kekse | Einkauf
+Chips + Cola | Einkauf
+Bonbons | Einkauf
+Kaugummi | Einkauf
+Nutella | Einkauf
+# Einkauf – Lebensmittel
+Milch | Einkauf
+Hafermilch | Einkauf
+Butter, Käse | Einkauf
+Eier | Einkauf
+Brot | Einkauf
+Brötchen holen | Einkauf
+Bananen | Einkauf
+Äpfel | Einkauf
+Tomaten Gurke Paprika | Einkauf
+Kartoffeln | Einkauf
+Zwiebeln | Einkauf
+Hackfleisch | Einkauf
+Hähnchen | Einkauf
+Lachs | Einkauf
+Nudeln | Einkauf
+Reis! | Einkauf
+Mehl Zucker | Einkauf
+Olivenöl | Einkauf
+Haferflocken | Einkauf
+Joghurt | Einkauf
+Tiefkühlpizza | Einkauf
+Kaffee | Einkauf
+Teebeutel | Einkauf
+Wasser kisten | Einkauf
+Getränke | Einkauf
+Wein für Samstag | Einkauf
+# Einkauf – Drogerie & Haushaltsmittel
+Schampoo | Einkauf
+Duschgel | Einkauf
+Zahnpasta | Einkauf
+Deo | Einkauf
+Sonnencreme | Einkauf
+Wattepads | Einkauf
+Tampons | Einkauf
+Pampers | Einkauf
+Feuchttuecher | Einkauf
+Windeln Größe 5 | Einkauf
+Zewa + Müllbeutel | Einkauf
+Klopapier | Einkauf
+Waschmittel | Einkauf
+Spülmaschinentabs | Einkauf
+Batterien | Einkauf
+Katzenfutter | Einkauf
+Druckerpatrone | Einkauf
+Socken Hermine | Einkauf, Kinder
+Winterjacke | Einkauf
+Gummistiefel | Einkauf
+# Einkauf – Geschäfte
+dm | Einkauf
+Rossmann | Einkauf
+Rewe | Einkauf
+Aldi | Einkauf
+Lidl | Einkauf
+Ikea | Einkauf
+Action | Einkauf
+H&M | Einkauf
+Amazon Retoure | Einkauf
+Paket abholen | Einkauf
+Bestellung zurückschicken | Einkauf
+Douglas | Einkauf
+# Arzt
+Kinderarzt | Arzt, Kinder
+Zahnarzt Kontrolle | Arzt
+Frauenarzt | Arzt
+Hautarzt | Arzt
+Doc? | Arzt
+Dr. Weber | Arzt
+Physio | Arzt
+Pysio absagen | Arzt
+Logopädie | Arzt
+Ergotherapie | Arzt
+Osteopath | Arzt
+Reha | Arzt
+Apotheke | Arzt
+Rezept abholen | Arzt
+Rezept in der Apotheke abholen | Arzt
+Ibu + Nasenspray | Arzt
+Hustensaft | Arzt
+Blutabnahme | Arzt
+Impfung | Arzt
+U9 Hermine | Arzt, Kinder
+U7 | Arzt, Kinder
+Krankschreibung | Arzt
+Röntgen | Arzt
+MRT | Arzt
+Brille abholen | Arzt
+Fielmann | Arzt
+Optiker | Arzt
+Krankenhaus | Arzt
+Hebamme | Arzt
+Zahnreinigung | Arzt
+Kieferorthopäde | Arzt
+Klinikum Besuch Oma | Arzt, Treffen
+Apotheke Windeln | Arzt, Einkauf
+# Unterlagen
+Yvonne unterschift | Unterlagen
+Steuererklärung | Unterlagen
+Steuern Auto | Unterlagen, Haushalt
+Finanzamt | Unterlagen
+Kindergeld Antrag | Unterlagen
+Elterngeld | Unterlagen
+Formular Kita | Unterlagen, Kinder
+Kita Formular | Unterlagen, Kinder
+Versicherung anrufen | Unterlagen
+Krankenkasse | Unterlagen
+TK Karte neu beantragen | Unterlagen
+Vertrag kündigen | Unterlagen
+Handyvertrag kündigen | Unterlagen
+Rechnung bezahlen | Unterlagen
+Zahnarztrechnung | Unterlagen, Arzt
+Überweisung | Unterlagen
+Lastschrift checken | Unterlagen
+Brief wegschicken | Unterlagen
+Briefmarken | Unterlagen
+Post | Unterlagen
+Kopie Perso | Unterlagen
+Personalausweis verlängern | Unterlagen
+Reisepass | Unterlagen
+Bürgeramt | Unterlagen
+Gutschein ausdrucken | Unterlagen, Geschenke
+Geburtstagskarte ausdrucken | Unterlagen, Geschenke
+Mahnung | Unterlagen
+Bank | Unterlagen
+Miete | Unterlagen
+Nebenkostenabrechnung | Unterlagen
+# Geschenke
+Geschenk Oma | Geschenke
+Geburstag Ina | Geschenke
+Geburtstag Hermine Schule | Geschenke, Kinder
+Opa Bday | Geschenke
+Karte für Oma | Geschenke
+Gutschein bei dm | Geschenke, Einkauf
+Gutschein Rossmann für Lisa | Geschenke, Einkauf
+Müller Gutschein | Geschenke, Einkauf
+Blumenstrauß | Geschenke
+Blumen für Mama | Geschenke
+Wichteln | Geschenke
+Mitbringsel | Geschenke
+Action Mitbringsel | Geschenke, Einkauf
+Hochzeit Sarah | Geschenke
+Taufe | Geschenke
+Kommunion Geschenk | Geschenke
+Einladung Geburtstag | Geschenke
+Geschenkpapier | Geschenke
+Torte bestellen | Geschenke, Einkauf
+Party Deko | Geschenke
+Muttertag | Geschenke
+Adventskalender füllen | Geschenke
+Kindergeburtstag planen | Kinder, Geschenke
+# Kinder
+Schule | Kinder
+Elternabend | Kinder
+Elternabned | Kinder
+Elternsprechtag 16:30 | Kinder
+Kita | Kinder
+Kita Fest | Kinder
+OGS anrufen | Kinder
+Hort abholen | Kinder
+Kinder abholen | Kinder
+Turnbeutel | Kinder
+Turnbeutel kaufen | Kinder, Einkauf
+Turnbeutel waschen | Kinder
+Hausaufgaben | Kinder
+Klassenfahrt bezahlen | Kinder
+Schwimmkurs | Kinder
+Seepferdchen | Kinder
+Brotdose | Kinder
+Trinkflasche | Kinder
+Wechselkleidung Kita | Kinder
+Laternenfest | Kinder
+St. Martin | Kinder
+Zeugnis | Kinder
+Nachhilfe | Kinder
+Musikschule | Kinder
+Ausflug Zoo | Kinder
+Tag der offenen Tuer | Kinder
+Klassenarbeit Mathe | Kinder
+Schulranzen | Kinder
+Gymnasium Anmeldung | Kinder
+Babysitter | Kinder
+# Treffen
+Kaffee mit Lisa | Treffen
+Treffen mit Sabine | Treffen
+Besuch Oma | Treffen
+Oma besuchen | Treffen
+Essen gehen | Treffen
+Pizza essen mit Lisa | Treffen
+Brunch | Treffen
+Mädelsabend | Treffen
+Kino | Treffen
+Theater | Treffen
+Grillen bei Tom | Treffen
+Stammtisch | Treffen
+Telefonat mit Mama | Treffen
+Date | Treffen
+# Für mich
+Friseur | Für mich
+Frisör 15 Uhr | Für mich
+Nägel | Für mich
+Nägel machen | Für mich
+Maniküre | Für mich
+Wimpern | Für mich
+Augenbrauen | Für mich
+Kosmetik | Für mich
+Massage | Für mich
+Sauna | Für mich
+Yoga | Für mich
+Pilates | Für mich
+Fitnessstudio | Für mich
+Sport | Für mich
+Joggen | Für mich
+Schwimmen | Für mich
+Lesen | Für mich
+Me Time | Für mich
+# Haushalt
+Gelbe Tonne rausstellen | Haushalt
+Müll raus | Haushalt
+Mülltonne | Haushalt
+Sperrmüll | Haushalt
+Altglas | Haushalt
+Pfand wegbringen | Haushalt
+Wäsche | Haushalt
+Wäsche waschen | Haushalt
+Bettwäsche wechseln | Haushalt
+Bügeln | Haushalt
+Fenster putzen | Haushalt
+Bad putzen | Haushalt
+Staubsaugen | Haushalt
+Aufräumen | Haushalt
+Dachboden aufräumen | Haushalt
+Keller ausmisten | Haushalt
+Handwerker Heizung | Haushalt
+Heizung Ableser | Haushalt
+Schornsteinfeger | Haushalt
+Waschmaschine kaputt | Haushalt
+Auto Werkstatt | Haushalt
+TÜV | Haushalt
+Reifenwechsel | Haushalt
+Tanken | Haushalt
+Blumen gießen | Haushalt
+Rasen mähen | Haushalt
+Garten | Haushalt
+Umzug | Haushalt
+# Fallen – sollen NICHT falsch landen
+Admin fragen | -
+Reise planen | -
+Reise mit Nadim | Treffen?
+Preis vergleichen | -
+Kurt anrufen | Treffen
+Bankett | -
+Wim abholen | Kinder
+Mia abholen | -
+Kuchenrezept ausprobieren | -
+Milchzahn wackelt | Arzt?
+Autor Lesung | -
+Haustür | -
+Schulter tut weh | -
+Abschluss Projekt | -
+Karten spielen | -
+Altersvorsorge | Unterlagen?
+Ankündigung | -
+Christine anrufen | Treffen
+Edyta | -
+Ina | -
+Pandas | -
+Tagesordnung | -
+Hallo | -
+Termin | -
+
+# Kindernamen
+Brille Hermine | Arzt, Kinder
+Wim Geburtstag | Geschenke, Kinder
+Hermine Schuhe | Einkauf, Kinder
+Wim Fußball | Kinder
