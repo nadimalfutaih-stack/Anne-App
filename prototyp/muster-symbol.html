@@ -1,0 +1,63 @@
+<title>Mein Tag Symbol</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: drei Symbol-Vorschläge nebeneinander, darunter je eine Mini-Vorschau auf einem Home-Bildschirm neben anderen Apps. */
+:root{--bg:#EEF4EF;--fg:#1D2A36;--muted:#56616C;--card:#fff;--line:#DCE6DE;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141a16;--fg:#eef2ee;--muted:#a9b4ac;--card:#1e2620;--line:#2f3a32;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141a16;--fg:#eef2ee;--muted:#a9b4ac;--card:#1e2620;--line:#2f3a32;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.45}
+.wrap{max-width:900px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:26px;margin:0}
+.lead{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:24px}
+.opt{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:12px;justify-items:center;text-align:center}
+.opt h2{margin:0;font-size:18px}
+.opt p{margin:0;color:var(--muted);font-size:14px}
+.big{width:120px;height:120px;border-radius:27px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.15)}
+.big svg,.sm svg{display:block;width:100%;height:100%}
+.home{width:100%;max-width:220px;border-radius:18px;padding:14px 12px;background:linear-gradient(160deg,#9db7c9,#c9b8a6);display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px}
+.app{display:grid;justify-items:center;gap:3px;font-size:9.5px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.sm{width:40px;height:40px;border-radius:10px;overflow:hidden}
+.ph{width:40px;height:40px;border-radius:10px}
+.note{margin-top:24px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px;max-width:62ch}
+.note ol{margin:6px 0 0;padding-left:20px;display:grid;gap:4px}
+</style>
+
+<div class="wrap">
+  <h1>Muster: neues Symbol für „Mein Tag“</h1>
+  <p class="lead">Drei Vorschläge im Salbei-Stil der App. Darunter jeweils, wie es auf dem Home-Bildschirm neben anderen Apps aussieht.</p>
+
+  <div class="grid">
+    <div class="opt">
+      <h2>1 · Kalenderblatt</h2>
+      <div class="big"><svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#EEF4EF"/><rect x="22" y="24" width="76" height="74" rx="14" fill="#fff"/><path d="M22 38a14 14 0 0 1 14-14h48a14 14 0 0 1 14 14v6H22z" fill="#C62835"/><rect x="40" y="16" width="6" height="16" rx="3" fill="#1D2A36"/><rect x="74" y="16" width="6" height="16" rx="3" fill="#1D2A36"/><rect x="34" y="56" width="30" height="7" rx="3.5" fill="#1D2A36"/><rect x="34" y="70" width="44" height="7" rx="3.5" fill="#C9D7CC"/><rect x="34" y="84" width="22" height="7" rx="3.5" fill="#C9D7CC"/><circle cx="82" cy="59.5" r="7" fill="#FFD24A"/></svg></div>
+      <p>Wie ein Abreißkalender mit roter Kopfzeile. Sofort als „Termine“ erkennbar.</p>
+      <div class="home"><div class="app"><div class="ph" style="background:#4cd964"></div>Telefon</div><div class="app"><div class="sm"><svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#EEF4EF"/><rect x="22" y="24" width="76" height="74" rx="14" fill="#fff"/><path d="M22 38a14 14 0 0 1 14-14h48a14 14 0 0 1 14 14v6H22z" fill="#C62835"/><rect x="34" y="56" width="30" height="7" rx="3.5" fill="#1D2A36"/><rect x="34" y="70" width="44" height="7" rx="3.5" fill="#C9D7CC"/><circle cx="82" cy="59.5" r="7" fill="#FFD24A"/></svg></div>Mein Tag</div><div class="app"><div class="ph" style="background:#fff"></div>Kalender</div><div class="app"><div class="ph" style="background:#34aadc"></div>Fotos</div></div>
+    </div>
+
+    <div class="opt">
+      <h2>2 · Haken-Liste</h2>
+      <div class="big"><svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#2F6B55"/><rect x="24" y="22" width="72" height="78" rx="16" fill="#EEF4EF"/><circle cx="42" cy="44" r="7" fill="#2F6B55"/><path d="M38.5 44l2.5 2.6 4.5-5" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><rect x="54" y="40.5" width="30" height="7" rx="3.5" fill="#1D2A36"/><circle cx="42" cy="62" r="6" fill="none" stroke="#1D2A36" stroke-width="2.6"/><rect x="54" y="58.5" width="24" height="7" rx="3.5" fill="#9FB5A6"/><circle cx="42" cy="80" r="6" fill="none" stroke="#1D2A36" stroke-width="2.6"/><rect x="54" y="76.5" width="28" height="7" rx="3.5" fill="#9FB5A6"/></svg></div>
+      <p>Eine kleine Liste mit Haken. Passt zu den Listen-Kacheln und zum Abhaken.</p>
+      <div class="home"><div class="app"><div class="ph" style="background:#4cd964"></div>Telefon</div><div class="app"><div class="sm"><svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#2F6B55"/><rect x="24" y="22" width="72" height="78" rx="16" fill="#EEF4EF"/><circle cx="42" cy="44" r="7" fill="#2F6B55"/><rect x="54" y="40.5" width="30" height="7" rx="3.5" fill="#1D2A36"/><circle cx="42" cy="62" r="6" fill="none" stroke="#1D2A36" stroke-width="2.6"/><rect x="54" y="58.5" width="24" height="7" rx="3.5" fill="#9FB5A6"/><circle cx="42" cy="80" r="6" fill="none" stroke="#1D2A36" stroke-width="2.6"/><rect x="54" y="76.5" width="28" height="7" rx="3.5" fill="#9FB5A6"/></svg></div>Mein Tag</div><div class="app"><div class="ph" style="background:#fff"></div>Kalender</div><div class="app"><div class="ph" style="background:#34aadc"></div>Fotos</div></div>
+    </div>
+
+    <div class="opt">
+      <h2>3 · Anne-Initial</h2>
+      <div class="big"><svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#FFE7A3"/><circle cx="60" cy="60" r="38" fill="#EEF4EF"/><text x="60" y="76" text-anchor="middle" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="46" font-weight="800" fill="#1D2A36">A</text><circle cx="88" cy="32" r="12" fill="#C62835"/><text x="88" y="37" text-anchor="middle" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="13" font-weight="700" fill="#fff">20</text></svg></div>
+      <p>Persönlich: ein großes „A“ für Anne, mit kleinem roten Tagespunkt.</p>
+      <div class="home"><div class="app"><div class="ph" style="background:#4cd964"></div>Telefon</div><div class="app"><div class="sm"><svg viewBox="0 0 120 120"><rect width="120" height="120" fill="#FFE7A3"/><circle cx="60" cy="60" r="38" fill="#EEF4EF"/><text x="60" y="76" text-anchor="middle" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="46" font-weight="800" fill="#1D2A36">A</text><circle cx="88" cy="32" r="12" fill="#C62835"/></svg></div>Mein Tag</div><div class="app"><div class="ph" style="background:#fff"></div>Kalender</div><div class="app"><div class="ph" style="background:#34aadc"></div>Fotos</div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>So kommt das Symbol aufs iPhone</b>
+    <ol>
+      <li>Ich erstelle das gewählte Symbol als Bild und schicke es dir.</li>
+      <li>Du speicherst es in deinen Fotos.</li>
+      <li>In der Kurzbefehle-App bei „Mein Tag“: „Zum Home-Bildschirm“ → auf das kleine Symbol tippen → „Foto auswählen“ → das Bild wählen.</li>
+    </ol>
+  </div>
+</div>
