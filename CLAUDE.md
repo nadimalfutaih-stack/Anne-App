@@ -20,8 +20,9 @@ Eigenständiges Projekt von Nadim für seine Frau Anne. Hat nichts mit der Wein-
 
 - Farbe „Salbei“, immer hell, kein Dunkelmodus, kein Sonnenlicht-Verlauf.
 - Kompakter Kopf (Heute + roter Tageskreis + Datum in einer Zeile), hellgelbe Karte „Als Nächstes“.
-- Sechs Listen-Kacheln: Einkauf, Geschenke, Kinder, Unterlagen, Arzt, Sonstiges. Antippen zeigt nur diese Einträge des gewählten Tages, abhakbar.
-- „Heute“: Kacheln + Tagesliste. „Morgen“ und „Danach“: nur Kacheln, Einträge erst nach Antippen einer Kachel.
+- Neun Listen-Kacheln (3 × 3): Einkauf, Geschenke, Kinder, Unterlagen, Arzt, Haushalt, Treffen, Für mich, Sonstiges. Antippen zeigt nur diese Einträge des gewählten Tages, abhakbar.
+- „Heute“, „Morgen“ und „Danach“: zuerst nur die Kacheln, Einträge erst nach Antippen einer Kachel.
+- Kategorie kommt NUR aus dem Titel, nie aus der Uhrzeit (Anne trägt Zeiten willkürlich ein). Schlagwörter in `HINTS`: `words` = Teilwort, `whole` = nur ganzes Wort. Vorrang: Unterlagen → Arzt → Geschenke → Kinder → Treffen → Für mich → Einkauf → Haushalt, sonst Sonstiges.
 
 ## Symbol
 
