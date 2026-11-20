@@ -47,6 +47,10 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .tile small{font-size:.8rem;color:var(--muted)}
 .tile .n{position:absolute;top:.45rem;right:.5rem;font-size:.8rem;font-weight:700;color:#fff;background:var(--tc);border-radius:999px;min-width:1.4rem;height:1.4rem;display:grid;place-items:center;padding:0 .35rem;font-variant-numeric:tabular-nums}
 .tile.on{outline:2.5px solid var(--nav-on);outline-offset:-2.5px}
+.pick{margin-top:.9rem;display:flex;gap:.7rem;align-items:center;background:var(--card);border-radius:14px;padding:.85rem 1rem}
+.pick span{font-size:1.4rem}
+.pick b{display:block;font-size:1rem}
+.pick small{display:block;color:var(--muted);font-size:.9rem}
 .cathead{display:flex;align-items:center;gap:.6rem;margin-top:.9rem;flex-wrap:wrap}
 .cathead h2{margin:0;font-size:1.3rem;font-weight:800}
 .cathead span{color:var(--muted);font-size:.93rem}
@@ -307,21 +311,19 @@ function catView(){
   if (fin.length) html += `<div class="sect"><h2>Erledigt</h2><div class="listcard"><ul class="list">${fin.map(i=>row({...i, task:true},{when:when(i), noHint:true})).join("")}</ul></div></div>`;
   return html;
 }
+function pickHint(when){
+  const n = items.filter(i=>inView(i) && !done.has(i.id)).length;
+  return `<div class="pick"><span aria-hidden="true">☝️</span><div><b>Tippe oben auf eine Liste.</b><small>${n ? `Dann siehst du, was ${when} ansteht.` : `Für ${when} steht nichts im Kalender.`}</small></div></div>`;
+}
 function render(){
   const v = document.getElementById("view");
   let html = "";
   if (view==="heute"){ setHeader("Heute", 0); html += tilesHTML() + (cat ? catView() : dayView(0)); }
-  else if (view==="morgen"){ setHeader("Morgen", 1); html += tilesHTML() + (cat ? catView() : dayView(1)); }
+  else if (view==="morgen"){ setHeader("Morgen", 1); html += tilesHTML() + (cat ? catView() : pickHint("morgen")); }
   else if (view==="danach"){
     setHeader("Danach", null);
     html += tilesHTML();
-    if (cat) { html += catView(); }
-    else {
-    const later = items.filter(i=>i.d>1).sort((a,b)=>a.d-b.d || byTime(a,b));
-    const byDay = {}; later.forEach(i=>{ (byDay[i.d] ||= []).push(i); });
-    html += Object.entries(byDay).map(([d,l])=>`<div class="sect"><h2>${fmtWd.format(dateOf(+d))}</h2><div class="listcard"><ul class="list">${l.map(i=>row(i,{noTick:true})).join("")}</ul></div></div>`).join("")
-      || `<div class="sect"><div class="listcard"><div class="empty">Danach steht noch nichts im Kalender.</div></div></div>`;
-    }
+    html += cat ? catView() : pickHint("ab übermorgen");
   } else {
     setHeader("Suchen", null);
     html += `<input id="q" class="search" type="search" placeholder="Was suchst du? z. B. Turnbeutel" aria-label="Im Kalender suchen" value="${esc(q)}">`;
