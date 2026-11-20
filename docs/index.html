@@ -75,6 +75,16 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .vhint.an::before{content:"";width:.55rem;height:.55rem;border-radius:50%;background:#C62835}
 .gesagt{font-size:.93rem;font-style:italic;background:var(--card);border-radius:999px;padding:.25rem .8rem;max-width:100%;overflow-wrap:anywhere}
 @media (prefers-reduced-motion:reduce){.mikro.an,.mikro.an::before,.mikro.an::after{animation:none}.mikro.an::before{opacity:1;inset:-.5rem}}
+.entwurf{margin-top:.8rem;background:var(--card);border-radius:14px;padding:.85rem;display:grid;gap:.55rem}
+.entwurf label{font-size:.86rem;color:var(--muted);font-weight:600}
+.entwurf .search{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{font:inherit;font-size:.9rem;font-weight:600;min-height:40px;padding:.3rem .9rem;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.chip.on{background:var(--nav-on);border-color:var(--nav-on);color:#fff}
+.vbtns{display:grid;gap:.45rem}
+.vbtn{font:inherit;font-size:1rem;font-weight:700;min-height:48px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.vbtn.haupt{background:var(--nav-on);border-color:var(--nav-on);color:#fff}
+.vbtn.leise{border:0;background:none;color:var(--muted);font-weight:600;min-height:44px}
 .pick{margin-top:.9rem;display:flex;gap:.7rem;align-items:center;background:var(--card);border-radius:14px;padding:.85rem 1rem}
 .pick span{font-size:1.4rem}
 .pick b{display:block;font-size:1rem}
@@ -381,12 +391,46 @@ function pickHint(when){
 const MIC_AUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>';
 const MIC_AN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a2.5 2.5 0 0 0 2.5-2.5v-5a2.5 2.5 0 0 0-5 0v5A2.5 2.5 0 0 0 10 13zm4.2-2.5a4.2 4.2 0 0 1-8.4 0H4.2a5.8 5.8 0 0 0 5 5.75V19h1.6v-2.75a5.8 5.8 0 0 0 5-5.75h-1.6z"/><path d="M17.4 7.2a5 5 0 0 1 0 6.6l1.15 1.05a6.6 6.6 0 0 0 0-8.7zM19.7 4.9a8.3 8.3 0 0 1 0 11.2l1.15 1.05a9.9 9.9 0 0 0 0-13.3z"/></svg>';
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let hoert = false, gesagt = "", vMsg = "";
+let hoert = false, gesagt = "", vMsg = "", nutzerAn = false, basis = "", entwurf = null;
 const T_BEREIT = "Tippen und sprechen", T_HOERT = "Ich höre zu … Tippen zum Stoppen";
 function voiceHTML(){
-  const msg = hoert ? T_HOERT : (vMsg || T_BEREIT);
-  return `<div class="voice${cat && !hoert ? " klein" : ""}"><button id="mikro" class="mikro${hoert ? " an" : ""}" aria-pressed="${hoert}" aria-label="${hoert ? "Zuhören beenden" : "Sprechen"}">${hoert ? MIC_AN : MIC_AUS}</button>
-    <div class="vhint${hoert ? " an" : ""}" role="status">${esc(msg)}</div>${gesagt ? `<div class="gesagt">„${esc(gesagt)}“</div>` : ""}</div>`;
+  const msg = hoert ? T_HOERT : (vMsg || (entwurf ? "Stimmt der Text? Dann eintragen." : T_BEREIT));
+  return `<div class="voice${cat && !hoert && !entwurf ? " klein" : ""}"><button id="mikro" class="mikro${hoert ? " an" : ""}" aria-pressed="${hoert}" aria-label="${hoert ? "Zuhören beenden" : "Sprechen"}">${hoert ? MIC_AN : MIC_AUS}</button>
+    <div class="vhint${hoert ? " an" : ""}" role="status">${esc(msg)}</div>${hoert && gesagt ? `<div class="gesagt">„${esc(gesagt)}“</div>` : ""}</div>${entwurf && !hoert ? entwurfHTML() : ""}`;
+}
+// ---------- Eintragen-Karte ----------
+const WTAG = ["sonntag","montag","dienstag","mittwoch","donnerstag","freitag","samstag"];
+const BEFEHL = /^(bitte\s+)?(trag(e)?\s+(mir\s+)?(bitte\s+)?(ein|ein:)|eintragen|notier(e)?|merk(e)?\s+dir|schreib(e)?\s+(auf|ein)|erinner(e)?\s+mich\s+(an|daran)|tipp(e)?(\s+ein)?)\s*:?\s*/i;
+function entwurfAus(text){
+  let t = " " + text.trim().replace(/[„“"]/g,"") + " ";
+  let d = 0; const l = t.toLowerCase();
+  if (/ übermorgen /.test(l)) d = 2; else if (/ morgen /.test(l)) d = 1;
+  else { const w = WTAG.findIndex(x => l.includes(" " + x) || l.includes(" am " + x)); if (w >= 0){ const heute = today.getDay(); d = (w - heute + 7) % 7 || 7; } }
+  t = t.replace(/\s(am\s+)?(heute|übermorgen|morgen|sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag)(?=[\s,.!?])/gi," ");
+  t = t.trim().replace(BEFEHL,"").replace(/^(ich\s+muss\s+(noch\s+)?|wir\s+müssen\s+(noch\s+)?|nicht\s+vergessen:?\s*)/i,"").replace(/[.!?]+$/,"").replace(/\s+/g," ").trim();
+  if (t) t = t.charAt(0).toUpperCase() + t.slice(1);
+  const frage = /^(was|wann|wo|wer|welche|zeig|gibt es|habe ich|hab ich|muss ich)\b/i.test(text.trim());
+  return {text: t, d, frage, roh: text};
+}
+const fmtChip = new Intl.DateTimeFormat("de-DE",{weekday:"short",day:"numeric",month:"short"});
+function entwurfHTML(){
+  const e = entwurf;
+  const chips = [[0,"Heute"],[1,"Morgen"],[2,"Übermorgen"]];
+  if (e.d > 2) chips.push([e.d, fmtChip.format(dateOf(e.d))]);
+  const eintragen = `<button class="vbtn haupt" id="eintragen">📅 In den Kalender eintragen</button>`;
+  const anzeigen = `<button class="vbtn${e.frage ? " haupt" : ""}" id="anzeigen">Nur anzeigen</button>`;
+  return `<div class="entwurf"><label for="eText">Das hast du gesagt:</label>
+    <input id="eText" class="search" value="${esc(e.text)}" aria-label="Eintrag">
+    <div class="chips" role="group" aria-label="Tag">${chips.map(([d,n])=>`<button class="chip${d===e.d?" on":""}" data-tag="${d}" aria-pressed="${d===e.d}">${n}</button>`).join("")}</div>
+    <div class="vbtns">${e.frage ? anzeigen + eintragen : eintragen + anzeigen}<button class="vbtn leise" id="verwerfen">Verwerfen</button></div></div>`;
+}
+function eintragen(){
+  const t = (document.getElementById("eText")?.value || entwurf.text).trim();
+  if (!t){ vMsg = "Bitte erst einen Text eingeben."; return render(); }
+  const x = dateOf(entwurf.d); const ds = String(x.getDate()).padStart(2,"0") + "." + String(x.getMonth()+1).padStart(2,"0") + "." + x.getFullYear();
+  const url = "shortcuts://run-shortcut?name=" + encodeURIComponent("Eintragen") + "&input=text&text=" + encodeURIComponent(t + ";" + ds);
+  entwurf = null; vMsg = "„" + t + "“ wird eingetragen …"; render();
+  location.href = url;
 }
 function setView(v){ view = v; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===v)); }
 // Gesagtes verstehen: Tag + Kästchen, sonst Suche nach dem Wort.
@@ -419,18 +463,28 @@ function verstehen(text){
 }
 let erkennung = null;
 if (SR){
-  erkennung = new SR(); erkennung.lang = "de-DE"; erkennung.interimResults = true; erkennung.continuous = false; erkennung.maxAlternatives = 1;
+  erkennung = new SR(); erkennung.lang = "de-DE"; erkennung.interimResults = true; erkennung.continuous = true; erkennung.maxAlternatives = 1;
   let endText = "";
-  erkennung.onstart = () => { hoert = true; endText = ""; gesagt = ""; vMsg = ""; render(); };
-  erkennung.onresult = ev => { let zw = ""; for (let i = ev.resultIndex; i < ev.results.length; i++){ const r = ev.results[i]; if (r.isFinal) endText += r[0].transcript; else zw += r[0].transcript; }
-    gesagt = (endText + zw).trim(); const g = document.querySelector(".gesagt"); if (g) g.textContent = "„" + gesagt + "“"; else render(); };
-  erkennung.onerror = ev => { vMsg = ev.error === "not-allowed" || ev.error === "service-not-allowed" ? "Mikrofon ist gesperrt. Bitte in den Einstellungen erlauben."
-      : ev.error === "no-speech" ? "Ich habe nichts gehört. Versuch es noch einmal." : "Spracheingabe geht gerade nicht. Bitte oben ein Kästchen antippen."; };
-  erkennung.onend = () => { hoert = false; if (gesagt) verstehen(gesagt); else render(); };
+  const zusammen = (...t) => t.filter(Boolean).join(" ").replace(/\s+/g," ").trim();
+  erkennung.onstart = () => { hoert = true; endText = ""; vMsg = ""; render(); };
+  erkennung.onresult = ev => { let zw = ""; for (let i = ev.resultIndex; i < ev.results.length; i++){ const r = ev.results[i]; if (r.isFinal) endText += " " + r[0].transcript; else zw += r[0].transcript; }
+    gesagt = zusammen(basis, endText, zw); const g = document.querySelector(".gesagt"); if (g) g.textContent = "„" + gesagt + "“"; else render(); };
+  erkennung.onerror = ev => { if (ev.error === "not-allowed" || ev.error === "service-not-allowed"){ nutzerAn = false; vMsg = "Mikrofon ist gesperrt. Bitte in den Einstellungen erlauben."; }
+    else if (ev.error !== "no-speech" && ev.error !== "aborted"){ nutzerAn = false; vMsg = "Spracheingabe geht gerade nicht. Bitte oben ein Kästchen antippen."; } };
+  // Das iPhone beendet die Erkennung manchmal selbst: solange Anne nicht ausgeschaltet hat, sofort neu starten.
+  erkennung.onend = () => {
+    basis = gesagt;
+    if (nutzerAn){ try { erkennung.start(); return; } catch(_){ setTimeout(()=>{ try { erkennung.start(); } catch(_){} }, 250); return; } }
+    hoert = false;
+    if (gesagt){ entwurf = entwurfAus(gesagt); }
+    render();
+    if (entwurf) setTimeout(()=>document.querySelector(".entwurf")?.scrollIntoView({block:"center", behavior:"smooth"}), 50);
+  };
 }
 function mikroTippen(){
   if (!erkennung){ vMsg = "Spracheingabe geht hier nicht. Bitte oben ein Kästchen antippen."; return render(); }
-  if (hoert){ erkennung.stop(); return; }
+  if (hoert || nutzerAn){ nutzerAn = false; try { erkennung.stop(); } catch(_){} return; }
+  nutzerAn = true; basis = ""; gesagt = ""; entwurf = null;
   try { erkennung.start(); } catch(_){ /* läuft schon */ }
 }
 function render(){
@@ -465,6 +519,10 @@ function toast(text, undoable){
 }
 document.addEventListener("click", ev=>{
   if (ev.target.closest("#mikro")){ mikroTippen(); return; }
+  if (ev.target.closest("#eintragen")){ eintragen(); return; }
+  if (ev.target.closest("#anzeigen")){ const t = document.getElementById("eText")?.value || entwurf.roh; entwurf = null; gesagt = ""; verstehen(t); return; }
+  if (ev.target.closest("#verwerfen")){ entwurf = null; gesagt = ""; vMsg = ""; render(); return; }
+  const ch = ev.target.closest(".chip[data-tag]"); if (ch && entwurf){ entwurf.text = document.getElementById("eText")?.value ?? entwurf.text; entwurf.d = +ch.dataset.tag; render(); return; }
   const nb = ev.target.closest("nav button");
   if (nb){ view = nb.dataset.v; cat = null; vMsg = ""; gesagt = ""; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b===nb)); render(); window.scrollTo(0,0); if (view==="suchen") document.getElementById("q").focus(); return; }
   const tl = ev.target.closest(".tile,.catclose");
