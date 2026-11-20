@@ -24,6 +24,7 @@ Eigenständiges Projekt von Nadim für seine Frau Anne. Hat nichts mit der Wein-
 - „Heute“, „Morgen“ und „Danach“: zuerst nur die Kacheln, Einträge erst nach Antippen einer Kachel.
 - Kategorie kommt NUR aus dem Titel, nie aus der Uhrzeit (Anne trägt Zeiten willkürlich ein). Ein Eintrag kann in MEHRERE Kästchen (Abhaken gilt überall). Schlagwörter in `HINTS`: `words` = Teilwort, `whole` = nur ganzes Wort, `except` = hebt das Kästchen auf, `weak` = zählt nur, wenn sonst nichts passt. Ohne Treffer: Sonstiges.
 - Kindernamen Hermine und Wim zählen als Kinder.
+- Sprachknopf mittig unter den Kacheln (wie Wein-App): aus = Marineblau + Mikrofon, an = Gelb + Mikrofon mit Schallwellen, atmet, roter Punkt „Ich höre zu … Tippen zum Stoppen“. Gesagtes öffnet Tag/Kästchen (z. B. „Was muss ich morgen kaufen?“) oder sucht das Wort. Spracherkennung macht Safari (schickt an Apple).
 - Testlisten für die Zuordnung liegen in `tests/` (Format `Titel | Kategorie1, Kategorie2`, `-` = Sonstiges). Nach Änderungen an `HINTS` alle Listen prüfen.
 
 ## Symbol

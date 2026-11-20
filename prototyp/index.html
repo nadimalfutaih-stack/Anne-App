@@ -47,6 +47,24 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .tile small{font-size:.8rem;color:var(--muted)}
 .tile .n{position:absolute;top:.45rem;right:.5rem;font-size:.8rem;font-weight:700;color:#fff;background:var(--tc);border-radius:999px;min-width:1.4rem;height:1.4rem;display:grid;place-items:center;padding:0 .35rem;font-variant-numeric:tabular-nums}
 .tile.on{outline:2.5px solid var(--nav-on);outline-offset:-2.5px}
+/* Sprachknopf wie in der Wein-App: aus = Marineblau + Mikrofon, an = Gelb + Mikrofon mit Schallwellen, atmet, Ringe */
+.voice{display:grid;justify-items:center;gap:.35rem;margin-top:1rem}
+.mikro{position:relative;width:5.6rem;height:5.6rem;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;touch-action:manipulation;
+  background:var(--nav-on);color:#fff;box-shadow:inset 0 0 0 3px var(--nav-on),inset 0 0 0 4px rgba(255,210,74,.55),0 10px 24px rgba(23,54,83,.28);transition:background .2s,color .2s,transform .12s}
+.mikro svg{width:2.3rem;height:2.3rem;fill:currentColor}
+.mikro:active{transform:scale(.96)}
+.mikro::before,.mikro::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #E0A800;opacity:0;pointer-events:none}
+.mikro.an{background:#FFD24A;color:var(--nav-on);box-shadow:inset 0 0 0 3px #FFD24A,inset 0 0 0 4px rgba(23,54,83,.35),0 10px 26px rgba(224,168,0,.45);animation:atmen 2.4s ease-in-out infinite}
+.mikro.an::before{animation:ring 2.4s ease-out infinite}
+.mikro.an::after{animation:ring 2.4s ease-out 1.2s infinite}
+@keyframes atmen{50%{transform:scale(1.04)}}
+@keyframes ring{0%{inset:0;opacity:.9}100%{inset:-1.7rem;opacity:0}}
+.voice.klein .mikro{width:3.8rem;height:3.8rem}.voice.klein .mikro svg{width:1.6rem;height:1.6rem}.voice.klein{margin-top:.6rem}
+.vhint{font-size:.93rem;font-weight:600;color:var(--muted);text-align:center;min-height:1.3em;display:flex;align-items:center;gap:.4rem}
+.vhint.an{color:#8A5A00}
+.vhint.an::before{content:"";width:.55rem;height:.55rem;border-radius:50%;background:#C62835}
+.gesagt{font-size:.93rem;font-style:italic;background:var(--card);border-radius:999px;padding:.25rem .8rem;max-width:100%;overflow-wrap:anywhere}
+@media (prefers-reduced-motion:reduce){.mikro.an,.mikro.an::before,.mikro.an::after{animation:none}.mikro.an::before{opacity:1;inset:-.5rem}}
 .pick{margin-top:.9rem;display:flex;gap:.7rem;align-items:center;background:var(--card);border-radius:14px;padding:.85rem 1rem}
 .pick span{font-size:1.4rem}
 .pick b{display:block;font-size:1rem}
@@ -349,18 +367,74 @@ function pickHint(when){
   const n = items.filter(i=>inView(i) && !done.has(i.id)).length;
   return `<div class="pick"><span aria-hidden="true">☝️</span><div><b>Tippe oben auf eine Liste.</b><small>${n ? `Dann siehst du, was ${when} ansteht.` : `Für ${when} steht nichts im Kalender.`}</small></div></div>`;
 }
+// ---------- Sprachknopf ----------
+const MIC_AUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>';
+const MIC_AN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a2.5 2.5 0 0 0 2.5-2.5v-5a2.5 2.5 0 0 0-5 0v5A2.5 2.5 0 0 0 10 13zm4.2-2.5a4.2 4.2 0 0 1-8.4 0H4.2a5.8 5.8 0 0 0 5 5.75V19h1.6v-2.75a5.8 5.8 0 0 0 5-5.75h-1.6z"/><path d="M17.4 7.2a5 5 0 0 1 0 6.6l1.15 1.05a6.6 6.6 0 0 0 0-8.7zM19.7 4.9a8.3 8.3 0 0 1 0 11.2l1.15 1.05a9.9 9.9 0 0 0 0-13.3z"/></svg>';
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let hoert = false, gesagt = "", vMsg = "";
+const T_BEREIT = "Tippen und sprechen", T_HOERT = "Ich höre zu … Tippen zum Stoppen";
+function voiceHTML(){
+  const msg = hoert ? T_HOERT : (vMsg || T_BEREIT);
+  return `<div class="voice${cat && !hoert ? " klein" : ""}"><button id="mikro" class="mikro${hoert ? " an" : ""}" aria-pressed="${hoert}" aria-label="${hoert ? "Zuhören beenden" : "Sprechen"}">${hoert ? MIC_AN : MIC_AUS}</button>
+    <div class="vhint${hoert ? " an" : ""}" role="status">${esc(msg)}</div>${gesagt ? `<div class="gesagt">„${esc(gesagt)}“</div>` : ""}</div>`;
+}
+function setView(v){ view = v; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===v)); }
+// Gesagtes verstehen: Tag + Kästchen, sonst Suche nach dem Wort.
+const SPRACH_KAESTCHEN = [
+  ["Einkauf", ["einkauf","einkaufen","einkaufsliste","kaufen","besorgen","shoppen"]],
+  ["Geschenke", ["geschenk","geschenke","geburtstag","geburtstage"]],
+  ["Kinder", ["kinder","kind","schule","kita"]],
+  ["Unterlagen", ["unterlagen","papierkram","papiere","briefe","post"]],
+  ["Arzt", ["arzt","ärzte","aerzte","doktor","arzttermin","arzttermine"]],
+  ["Haushalt", ["haushalt","putzen"]],
+  ["Treffen", ["treffen","verabredung","verabredungen","besuch","besuche"]],
+  ["Für mich", ["für mich","fuer mich","mich selbst"]],
+  ["Sonstiges", ["sonstiges","rest","andere"]],
+];
+const FUELL = new Set("was wann wo wer muss musst soll ich du wir habe hab hat ist sind steht stehen an noch heute morgen übermorgen danach später nächste nächsten woche bald bitte zeig zeige mir mal die der das den dem ein eine einen für fuer zu zum zur mit und oder termin termine liste los gibt es bei in im am alles alle".split(" "));
+function verstehen(text){
+  const l = " " + text.toLowerCase().normalize("NFC").replace(/[.,!?„“"]/g," ").replace(/\s+/g," ") + " ";
+  let tag = null;
+  if (/ (übermorgen|danach|später|nächste woche|nächsten woche|bald) /.test(l)) tag = "danach";
+  else if (/ morgen /.test(l)) tag = "morgen";
+  else if (/ heute /.test(l)) tag = "heute";
+  const k = SPRACH_KAESTCHEN.find(([,ws]) => ws.some(w => l.includes(" " + w + " ")));
+  if (k){ setView(tag || (view==="suchen" ? "heute" : view)); cat = k[0]; vMsg = ""; return render(); }
+  const wort = l.trim().split(" ").filter(w => w && !FUELL.has(w)).join(" ");
+  if (!wort && tag){ setView(tag); cat = null; vMsg = ""; return render(); }
+  if (wort && items.some(i => i.t.toLowerCase().includes(wort) || i.hint.toLowerCase().includes(wort))){ setView("suchen"); cat = null; q = wort; vMsg = ""; return render(); }
+  const c = catsFor(wort || text)[0];
+  if (c){ setView(tag || (view==="suchen" ? "heute" : view)); cat = c; vMsg = ""; return render(); }
+  vMsg = "Das habe ich nicht verstanden. Versuch es noch einmal."; render();
+}
+let erkennung = null;
+if (SR){
+  erkennung = new SR(); erkennung.lang = "de-DE"; erkennung.interimResults = true; erkennung.continuous = false; erkennung.maxAlternatives = 1;
+  let endText = "";
+  erkennung.onstart = () => { hoert = true; endText = ""; gesagt = ""; vMsg = ""; render(); };
+  erkennung.onresult = ev => { let zw = ""; for (let i = ev.resultIndex; i < ev.results.length; i++){ const r = ev.results[i]; if (r.isFinal) endText += r[0].transcript; else zw += r[0].transcript; }
+    gesagt = (endText + zw).trim(); const g = document.querySelector(".gesagt"); if (g) g.textContent = "„" + gesagt + "“"; else render(); };
+  erkennung.onerror = ev => { vMsg = ev.error === "not-allowed" || ev.error === "service-not-allowed" ? "Mikrofon ist gesperrt. Bitte in den Einstellungen erlauben."
+      : ev.error === "no-speech" ? "Ich habe nichts gehört. Versuch es noch einmal." : "Spracheingabe geht gerade nicht. Bitte oben ein Kästchen antippen."; };
+  erkennung.onend = () => { hoert = false; if (gesagt) verstehen(gesagt); else render(); };
+}
+function mikroTippen(){
+  if (!erkennung){ vMsg = "Spracheingabe geht hier nicht. Bitte oben ein Kästchen antippen."; return render(); }
+  if (hoert){ erkennung.stop(); return; }
+  try { erkennung.start(); } catch(_){ /* läuft schon */ }
+}
 function render(){
   const v = document.getElementById("view");
   let html = "";
-  if (view==="heute"){ setHeader("Heute", 0); html += tilesHTML() + (cat ? catView() : pickHint("heute")); }
-  else if (view==="morgen"){ setHeader("Morgen", 1); html += tilesHTML() + (cat ? catView() : pickHint("morgen")); }
+  if (view==="heute"){ setHeader("Heute", 0); html += tilesHTML() + voiceHTML() + (cat ? catView() : pickHint("heute")); }
+  else if (view==="morgen"){ setHeader("Morgen", 1); html += tilesHTML() + voiceHTML() + (cat ? catView() : pickHint("morgen")); }
   else if (view==="danach"){
     setHeader("Danach", null);
-    html += tilesHTML();
+    html += tilesHTML() + voiceHTML();
     html += cat ? catView() : pickHint("ab übermorgen");
   } else {
     setHeader("Suchen", null);
-    html += `<input id="q" class="search" type="search" placeholder="Was suchst du? z. B. Turnbeutel" aria-label="Im Kalender suchen" value="${esc(q)}">`;
+    html += `<input id="q" class="search" type="search" placeholder="Was suchst du? z. B. Turnbeutel" aria-label="Im Kalender suchen" value="${esc(q)}">` + voiceHTML();
     if (q){
       const hits = items.filter(i=>i.t.toLowerCase().includes(q) || i.hint.toLowerCase().includes(q)).sort((a,b)=>a.d-b.d || byTime(a,b));
       html += hits.length
@@ -380,10 +454,11 @@ function toast(text, undoable){
   t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ t.hidden = true; }, 5000);
 }
 document.addEventListener("click", ev=>{
+  if (ev.target.closest("#mikro")){ mikroTippen(); return; }
   const nb = ev.target.closest("nav button");
-  if (nb){ view = nb.dataset.v; cat = null; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b===nb)); render(); window.scrollTo(0,0); if (view==="suchen") document.getElementById("q").focus(); return; }
+  if (nb){ view = nb.dataset.v; cat = null; vMsg = ""; gesagt = ""; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b===nb)); render(); window.scrollTo(0,0); if (view==="suchen") document.getElementById("q").focus(); return; }
   const tl = ev.target.closest(".tile,.catclose");
-  if (tl){ cat = (cat===tl.dataset.cat) ? null : tl.dataset.cat; render(); return; }
+  if (tl){ cat = (cat===tl.dataset.cat) ? null : tl.dataset.cat; vMsg = ""; gesagt = ""; render(); return; }
   const tk = ev.target.closest(".tick");
   if (tk){
     const id = tk.dataset.id;
