@@ -1,0 +1,48 @@
+<title>Tagebuch Symbol Farben</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: vier Farbvarianten des Tagebuch-Symbols in Karten; je Karte groß, in Home-Bildschirm-Größe und zwischen anderen Apps. */
+:root{--bg:#EEF4EF;--fg:#1D2A36;--muted:#56616C;--card:#fff;--line:#DCE6DE;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141a16;--fg:#eef2ee;--muted:#a9b4ac;--card:#1e2620;--line:#2f3a32;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141a16;--fg:#eef2ee;--muted:#a9b4ac;--card:#1e2620;--line:#2f3a32;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.45}
+.wrap{max-width:1000px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:26px;margin:0}
+.lead{color:var(--muted);margin:6px 0 0;max-width:64ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:24px}
+.opt{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;display:grid;gap:12px;justify-items:center;text-align:center;align-content:start}
+.opt h2{margin:0;font-size:18px}
+.opt p{margin:0;color:var(--muted);font-size:14px}
+.big{width:150px;height:150px;border-radius:34px;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.15)}
+img{display:block;width:100%;height:100%}
+.sizes{display:flex;gap:14px;align-items:end}
+.sizes div{width:60px;height:60px;border-radius:14px;overflow:hidden}
+.sizes div+div{width:40px;height:40px;border-radius:10px}
+.home{width:100%;max-width:220px;border-radius:18px;padding:14px 12px;background:linear-gradient(160deg,#9db7c9,#c9b8a6);display:grid;grid-template-columns:repeat(4,1fr);gap:10px 8px}
+.app{display:grid;justify-items:center;gap:3px;font-size:9.5px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.sm{width:40px;height:40px;border-radius:10px;overflow:hidden}
+.ph{width:40px;height:40px;border-radius:10px}
+</style>
+
+<div class="wrap">
+  <h1>Tagebuch-Symbol: vier Farben</h1>
+  <p class="lead">Dein Runway-Bild in vier Farbvarianten. Ich habe das Buch außerdem größer gezogen, damit es auf dem Home-Bildschirm mehr Platz einnimmt.</p>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const V = [
+  ["original","1 · Wie von Runway","Helles Salbei, Marineblau, Gelb."],
+  ["salbei","2 · Salbei edel","Kräftiges Salbeigrün, Nachtblau, Creme und Gold."],
+  ["leder","3 · Leder & Creme","Cognac-Leder auf Sand, Schrift in Braun."],
+  ["bordeaux","4 · Bordeaux","Bordeaux-Einband auf Creme, Punkt in Gold."],
+];
+const other = (c,n) => `<div class="app"><div class="ph" style="background:${c}"></div>${n}</div>`;
+document.getElementById("grid").innerHTML = V.map(([f,name,txt])=>{
+  const img = `<img src="symbole/tagebuch-${f}.png" alt="">`;
+  return `<div class="opt"><h2>${name}</h2><div class="big">${img}</div><div class="sizes"><div>${img}</div><div>${img}</div></div><p>${txt}</p>
+  <div class="home">${other("#4cd964","Telefon")}<div class="app"><div class="sm">${img}</div>Mein Tag</div>${other("#fff","Kalender")}${other("#34aadc","Fotos")}</div></div>`;
+}).join("");
+</script>
