@@ -392,6 +392,8 @@ const MIC_AUS = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14a3 3
 const MIC_AN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a2.5 2.5 0 0 0 2.5-2.5v-5a2.5 2.5 0 0 0-5 0v5A2.5 2.5 0 0 0 10 13zm4.2-2.5a4.2 4.2 0 0 1-8.4 0H4.2a5.8 5.8 0 0 0 5 5.75V19h1.6v-2.75a5.8 5.8 0 0 0 5-5.75h-1.6z"/><path d="M17.4 7.2a5 5 0 0 1 0 6.6l1.15 1.05a6.6 6.6 0 0 0 0-8.7zM19.7 4.9a8.3 8.3 0 0 1 0 11.2l1.15 1.05a9.9 9.9 0 0 0 0-13.3z"/></svg>';
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let hoert = false, gesagt = "", vMsg = "", nutzerAn = false, basis = "", entwurf = null;
+// Eintragen per Sprache ist auf Standby, bis der Kurzbefehl "Eintragen" fertig ist. Auf true stellen, um die Eintragen-Karte wieder zu zeigen.
+const EINTRAGEN_AKTIV = false;
 const T_BEREIT = "Tippen und sprechen", T_HOERT = "Ich höre zu … Tippen zum Stoppen";
 function voiceHTML(){
   const msg = hoert ? T_HOERT : (vMsg || (entwurf ? "Stimmt der Text? Dann eintragen." : T_BEREIT));
@@ -476,7 +478,8 @@ if (SR){
     basis = gesagt;
     if (nutzerAn){ try { erkennung.start(); return; } catch(_){ setTimeout(()=>{ try { erkennung.start(); } catch(_){} }, 250); return; } }
     hoert = false;
-    if (gesagt){ entwurf = entwurfAus(gesagt); }
+    if (gesagt && EINTRAGEN_AKTIV){ entwurf = entwurfAus(gesagt); }
+    else if (gesagt){ const g = gesagt; gesagt = ""; return verstehen(g); }
     render();
     if (entwurf) setTimeout(()=>document.querySelector(".entwurf")?.scrollIntoView({block:"center", behavior:"smooth"}), 50);
   };
