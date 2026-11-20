@@ -427,8 +427,8 @@ function entwurfHTML(){
 function eintragen(){
   const t = (document.getElementById("eText")?.value || entwurf.text).trim();
   if (!t){ vMsg = "Bitte erst einen Text eingeben."; return render(); }
-  const x = dateOf(entwurf.d); const ds = String(x.getDate()).padStart(2,"0") + "." + String(x.getMonth()+1).padStart(2,"0") + "." + x.getFullYear();
-  const url = "shortcuts://run-shortcut?name=" + encodeURIComponent("Eintragen") + "&input=text&text=" + encodeURIComponent(t + ";" + ds);
+  // Statt eines Datums wird die Zahl der Tage ab heute geschickt (0 = heute, 1 = morgen …); der Kurzbefehl rechnet "Aktuelles Datum + Tage".
+  const url = "shortcuts://run-shortcut?name=" + encodeURIComponent("Eintragen") + "&input=text&text=" + encodeURIComponent(t.replace(/;/g, ",") + ";" + entwurf.d);
   entwurf = null; vMsg = "„" + t + "“ wird eingetragen …"; render();
   location.href = url;
 }
