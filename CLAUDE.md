@@ -23,4 +23,8 @@ Eigenständiges Projekt von Nadim für seine Frau Anne. Hat nichts mit der Wein-
 - Sechs Listen-Kacheln: Einkauf, Geschenke, Kinder, Unterlagen, Arzt, Sonstiges. Antippen zeigt nur diese Einträge des gewählten Tages, abhakbar.
 - „Heute“: Kacheln + Tagesliste. „Morgen“ und „Danach“: nur Kacheln, Einträge erst nach Antippen einer Kachel.
 
+## Symbol
+
+- Home-Bildschirm-Symbol: Tagebuch „Nadim / Anne“ in Bordeaux, `prototyp/symbole/tagebuch-bordeaux.png` (Kurzbefehl → „Zum Home-Bildschirm“ → Foto auswählen).
+
 Projektnotizen liegen in Notion unter Notizen → „Nadim – Neue Apps“ → „Anne Kalender-App“.
