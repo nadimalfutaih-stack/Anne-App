@@ -158,7 +158,7 @@ function parseDate(v){
   const base = new Date(); base.setHours(0,0,0,0);
   const rel = {heute:0, today:0, morgen:1, tomorrow:1, gestern:-1, yesterday:-1, "übermorgen":2};
   for (const [w,o] of Object.entries(rel)) if (low.startsWith(w)) { const x = new Date(base); x.setDate(x.getDate()+o); x.setHours(hh,mm); return x; }
-  let m = low.match(/^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{2,4})?/);
+  let m = low.match(/^(\d{1,2})\s*[./-]\s*(\d{1,2})\s*[./-]?\s*(\d{4}|\d{2}(?!\d|[:.]\d))?/);
   let d, mo, y;
   if (m) { d=+m[1]; mo=+m[2]; y=m[3]?+m[3]:base.getFullYear(); }
   else {
@@ -227,7 +227,7 @@ document.getElementById("demo").hidden = !DEMO;
 // Hilfe bei der Einrichtung: Kommen Termine an, werden aber nicht angezeigt, steht unten ein kurzer Hinweis.
 if (LIVE && STATS.shown === 0) {
   const n = document.createElement("div"); n.className = "demo"; n.style.marginTop = "1.2rem";
-  n.textContent = `Hinweis (Version 3): ${STATS.chars} Zeichen, ${STATS.lines} Termine empfangen, ${STATS.dates} mit lesbarem Datum. Beispiel-Datum: „${STATS.sampleStart}“. Kalender: ${STATS.cals.join(", ") || "–"}.${STATS.err ? " Fehler: " + STATS.err : ""}`;
+  n.textContent = `Hinweis (Version 4): ${STATS.chars} Zeichen, ${STATS.lines} Termine empfangen, ${STATS.dates} mit lesbarem Datum. Beispiel-Datum: „${STATS.sampleStart}“. Kalender: ${STATS.cals.join(", ") || "–"}.${STATS.err ? " Fehler: " + STATS.err : ""}`;
   document.querySelector(".wrap").appendChild(n);
 }
 
