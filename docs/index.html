@@ -65,6 +65,17 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .frage button:active{transform:scale(.97)}
 .ftipp{font-size:.86rem;color:var(--muted);text-align:center;margin-top:.35rem}
 .ftipp.warn{color:#8A5A00;font-weight:600}
+.ftipp.ok{color:#2F6B45;font-weight:600}
+/* Karte "In den Kalender eintragen" */
+.vorschlag{margin-top:.7rem;background:var(--card);border:2px solid var(--next);border-radius:14px;padding:.8rem;display:grid;gap:.55rem}
+.vorschlag label{font-size:.86rem;color:var(--muted);font-weight:600}
+.vorschlag input{font:inherit;font-size:max(16px,1.07rem);font-weight:600;color:var(--fg);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:.5rem .7rem;min-height:2.9rem;-webkit-appearance:none;appearance:none}
+.vtage{display:flex;flex-wrap:wrap;gap:.4rem}
+.vtag{font:inherit;font-size:.95rem;font-weight:600;min-height:44px;padding:.3rem .95rem;border-radius:999px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+.vtag.on{background:var(--nav-on);border-color:var(--nav-on);color:#fff}
+.vknopf{font:inherit;font-size:1.05rem;font-weight:700;min-height:52px;border-radius:12px;border:0;background:var(--nav-on);color:#fff;cursor:pointer}
+.vleise{font:inherit;font-size:.95rem;font-weight:600;min-height:44px;border:0;background:none;color:var(--muted);cursor:pointer}
+.vreihe{display:flex;justify-content:space-between;gap:.5rem}
 .pick{margin-top:.9rem;display:flex;gap:.7rem;align-items:center;background:var(--card);border-radius:14px;padding:.85rem 1rem}
 .pick span{font-size:1.4rem}
 .pick b{display:block;font-size:1rem}
@@ -394,7 +405,49 @@ function pickHint(when){
 let vMsg = "", frage = "";
 function frageHTML(){
   return `<form class="frage" id="frageForm" role="search" autocomplete="off"><input id="frage" type="text" enterkeyhint="go" value="${esc(frage)}" placeholder="z. B. Was muss ich morgen kaufen?" aria-label="Frage an Mein Tag"><button type="submit">Los</button></form>
-    <div class="ftipp${vMsg ? " warn" : ""}" role="status">${esc(vMsg || "Zum Sprechen: im Feld das 🎤 der Tastatur antippen")}</div>`;
+    <div class="ftipp${vMsg ? (vOk ? " ok" : " warn") : ""}" role="status">${esc(vMsg || "Fragen oder Eintragen. Zum Sprechen: 🎤 der Tastatur")}</div>${vorschlag ? vorschlagHTML() : ""}`;
+}
+// ---------- Eintragen ohne Siri: Kalender-Datei (.ics), das iPhone zeigt "Hinzufügen" ----------
+let vorschlag = null, vOk = false;
+const WTAG = ["sonntag","montag","dienstag","mittwoch","donnerstag","freitag","samstag"];
+const IST_FRAGE = /^(was|wann|wo|wer|wie|welche[srnm]?|zeig(e)?|gibt es|habe ich|hab ich|muss ich|steht|stehen|such(e)?)\b/i;
+function vorschlagAus(text){
+  let t = " " + text.trim().replace(/[„“"]/g,"") + " ", d = 0; const l = t.toLowerCase();
+  if (/ übermorgen[ .,!?]/.test(l)) d = 2; else if (/ morgen[ .,!?]/.test(l)) d = 1;
+  else { const w = WTAG.findIndex(x => l.includes(" " + x)); if (w >= 0) d = (w - today.getDay() + 7) % 7 || 7; }
+  t = t.replace(/\s(am\s+)?(heute|übermorgen|morgen|sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag)(?=[\s,.!?])/gi," ");
+  t = t.replace(/^\s*(bitte\s+)?(trag(e)?\s+(mir\s+)?(bitte\s+)?ein:?|eintragen:?|notier(e)?:?|erinner(e)?\s+mich\s+(an|daran):?)\s*/i,"")
+       .replace(/^\s*(ich\s+muss\s+(noch\s+)?|wir\s+müssen\s+(noch\s+)?|nicht\s+vergessen:?\s*)/i,"")
+       .replace(/\bbitte\b/gi," ").replace(/[.!?]+\s*$/,"").replace(/\s+/g," ").trim();
+  if (t) t = t.charAt(0).toUpperCase() + t.slice(1);
+  return {text: t, d};
+}
+const fmtVTag = new Intl.DateTimeFormat("de-DE",{weekday:"short",day:"numeric",month:"short"});
+function vorschlagHTML(){
+  const v = vorschlag, tage = [[0,"Heute"],[1,"Morgen"],[2,"Übermorgen"]];
+  if (v.d > 2) tage.push([v.d, fmtVTag.format(dateOf(v.d))]);
+  return `<div class="vorschlag"><label for="vText">In den Kalender eintragen:</label>
+    <input id="vText" value="${esc(v.text)}" aria-label="Eintrag">
+    <div class="vtage" role="group" aria-label="Tag">${tage.map(([d,n])=>`<button class="vtag${d===v.d?" on":""}" data-vtag="${d}" aria-pressed="${d===v.d}">${n}</button>`).join("")}</div>
+    <button class="vknopf" id="vEintragen">📅 In den Kalender eintragen</button>
+    <div class="vreihe"><button class="vleise" id="vSuchen">Nur suchen</button><button class="vleise" id="vWeg">Abbrechen</button></div></div>`;
+}
+function kalenderDatei(titel, d){
+  const f = x => x.getFullYear() + String(x.getMonth()+1).padStart(2,"0") + String(x.getDate()).padStart(2,"0");
+  const tx = s => s.replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g," ");
+  const stamp = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//MeinTag//DE","METHOD:PUBLISH","BEGIN:VEVENT",
+    "UID:meintag-" + Date.now() + "@meintag","DTSTAMP:" + stamp,"DTSTART;VALUE=DATE:" + f(dateOf(d)),"DTEND;VALUE=DATE:" + f(dateOf(d+1)),
+    "SUMMARY:" + tx(titel),"END:VEVENT","END:VCALENDAR"].join("\r\n");
+}
+function eintragen(){
+  const t = (document.getElementById("vText")?.value || vorschlag.text).trim();
+  if (!t){ vMsg = "Bitte erst einen Text eingeben."; vOk = false; return render(); }
+  const url = URL.createObjectURL(new Blob([kalenderDatei(t, vorschlag.d)], {type:"text/calendar"}));
+  vorschlag = null; frage = ""; vOk = true;
+  vMsg = "Im Apple-Fenster auf „Hinzufügen“ tippen. Danach „Mein Tag“ neu öffnen.";
+  render();
+  location.href = url;
 }
 function setView(v){ view = v; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===v)); }
 // Gesagtes verstehen: Tag + Kästchen, sonst Suche nach dem Wort.
@@ -460,11 +513,19 @@ document.addEventListener("submit", ev=>{
   ev.preventDefault();
   const inp = document.getElementById("frage"); const t = inp.value.trim(); inp.blur();
   if (!t){ vMsg = ""; return render(); }
-  frage = t; verstehen(t);
+  frage = t; vOk = false;
+  if (IST_FRAGE.test(t)){ vorschlag = null; return verstehen(t); }
+  vorschlag = vorschlagAus(t); vMsg = "";
+  if (!vorschlag.text){ vorschlag = null; return verstehen(t); }
+  render(); setTimeout(()=>document.querySelector(".vorschlag")?.scrollIntoView({block:"center", behavior:"smooth"}), 50);
 });
 document.addEventListener("click", ev=>{
+  if (ev.target.closest("#vEintragen")){ eintragen(); return; }
+  if (ev.target.closest("#vSuchen")){ const t = vorschlag ? (document.getElementById("vText")?.value || vorschlag.text) : frage; vorschlag = null; verstehen(t); return; }
+  if (ev.target.closest("#vWeg")){ vorschlag = null; frage = ""; vMsg = ""; render(); return; }
+  const vt = ev.target.closest(".vtag[data-vtag]"); if (vt && vorschlag){ vorschlag.text = document.getElementById("vText")?.value ?? vorschlag.text; vorschlag.d = +vt.dataset.vtag; render(); return; }
   const nb = ev.target.closest("nav button");
-  if (nb){ view = nb.dataset.v; cat = null; vMsg = ""; frage = ""; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b===nb)); render(); window.scrollTo(0,0); if (view==="suchen") document.getElementById("q").focus(); return; }
+  if (nb){ view = nb.dataset.v; cat = null; vMsg = ""; frage = ""; vorschlag = null; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b===nb)); render(); window.scrollTo(0,0); if (view==="suchen") document.getElementById("q").focus(); return; }
   const tl = ev.target.closest(".tile,.catclose");
   if (tl){ cat = (cat===tl.dataset.cat) ? null : tl.dataset.cat; vMsg = "";
     if (cat) bestaetigen(items.filter(i => inView(i) && inCat(i, cat)));
