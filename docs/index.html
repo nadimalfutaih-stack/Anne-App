@@ -98,6 +98,14 @@ nav button{position:relative}
 .list{list-style:none;margin:0;padding:0}
 .row{padding-left:.85rem !important;padding-right:.85rem !important;display:grid;grid-template-columns:3.6rem 4px minmax(0,1fr) auto;gap:.6rem;align-items:center;padding:.3rem 0;border-bottom:1px solid var(--line);min-height:3.43rem}
 .row:last-child{border-bottom:0}
+/* Erledigte Einträge nach links wischen = löschen */
+.swrap{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.swrap:last-child{border-bottom:0}
+.swrap .row{position:relative;background:var(--card);border-bottom:0;touch-action:pan-y;transition:transform .18s ease-out;will-change:transform}
+.swrap .row.zieht{transition:none}
+.swrap .del{position:absolute;top:0;bottom:0;right:0;width:6.2rem;border:0;background:#C62835;color:#fff;font:inherit;font-weight:700;font-size:1rem;cursor:pointer;visibility:hidden}
+.swrap.auf .del{visibility:visible}
+.sect h2 small{font-weight:500;font-size:.8rem;color:var(--muted)}
 .time{font-variant-numeric:tabular-nums;font-size:.93rem;font-weight:400;line-height:1.25;white-space:nowrap}
 .time small{display:block;font-size:.941rem;font-weight:400;color:var(--muted)}
 .time.allday{font-size:.86rem;font-weight:400;color:var(--fg)}
@@ -355,6 +363,11 @@ eigeneSpeichern();
 let done = new Set();
 try { done = new Set(JSON.parse(localStorage.getItem("meintag-done")||"[]")); } catch(_){}
 const save = () => { try { localStorage.setItem("meintag-done", JSON.stringify([...done])); } catch(_){} };
+// ---------- Gelöschte Einträge ----------
+// Weggewischte Einträge: eigene werden wirklich gelöscht, Kalender-Einträge nur in "Mein Tag" ausgeblendet (im Apple-Kalender kann die App nichts löschen).
+let weg = new Set();
+try { weg = new Set(JSON.parse(localStorage.getItem("meintag-weg") || "[]")); } catch(_){}
+const wegSpeichern = () => { try { localStorage.setItem("meintag-weg", JSON.stringify([...weg])); } catch(_){} };
 // ---------- Neue Einträge ----------
 // Merkt sich auf diesem iPhone, welche Einträge schon gesehen wurden. Beim allerersten Öffnen ist nichts "neu".
 let gesehen = null, zuletzt = null;
@@ -370,10 +383,11 @@ function merken(){ try {
 } catch(_){} }
 function bestaetigen(list){ list.forEach(i => bestaetigt.add(i.id)); merken(); }
 
+let rueck = null;
 let view = "heute", q = "", lastDone = null, toastTimer = null, cat = null;
 const inCat = (i, name) => name === OTHER.name ? !i.cats.length : i.cats.includes(name);
 // Kacheln zeigen nur die Einträge der gewählten Ansicht: Heute = heute (ohne vorbei), Morgen = morgen, Danach = ab übermorgen.
-const inView = i => view==="morgen" ? i.d===1 : view==="danach" ? i.d>1 : (i.d===0 && (!i.time || mins(i.end||i.time) >= nowMin));
+const inView = i => !weg.has(i.id) && (view==="morgen" ? i.d===1 : view==="danach" ? i.d>1 : (i.d===0 && (!i.time || mins(i.end||i.time) >= nowMin)));
 const esc = s => s.replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mins = t => { const [a,b] = t.split(":").map(Number); return a*60+b; };
 const byTime = (a,b) => (a.time?1:0)-(b.time?1:0) || (a.time||"").localeCompare(b.time||"");
@@ -388,7 +402,9 @@ function row(i, opts={}){
     : "<span></span>";
   const tag = isDone ? `<span class="donetag">✓ Erledigt</span>` : "";
   const nt = istNeu(i) && !isDone ? `<span class="neutag">NEU</span>` : "";
-  return `<li class="row${isDone?" done":""}${nt?" neu":""}" style="--c:${calVar(i)}">${time}<span class="bar"></span><div class="t"><span class="txt">${esc(i.t)}</span>${nt}${tag}<span class="cal">${meta}</span></div>${right}</li>`;
+  const inhalt = `${time}<span class="bar"></span><div class="t"><span class="txt">${esc(i.t)}</span>${nt}${tag}<span class="cal">${meta}</span></div>${right}`;
+  if (opts.swipe) return `<li class="swrap"><button class="del" data-del="${esc(i.id)}" aria-label="Löschen: ${esc(i.t)}">Löschen</button><div class="row done" style="--c:${calVar(i)}">${inhalt}</div></li>`;
+  return `<li class="row${isDone?" done":""}${nt?" neu":""}" style="--c:${calVar(i)}">${inhalt}</li>`;
 }
 function dayView(d){
   const list = items.filter(i=>i.d===d);
@@ -438,7 +454,7 @@ function catView(){
   html += open.length
     ? `<div class="sect"><div class="listcard"><ul class="list">${open.map(i=>row({...i, task:true},{when:when(i), noHint:true})).join("")}</ul></div></div>`
     : `<div class="sect"><div class="listcard"><div class="empty">${fin.length ? "Alles erledigt. Schön!" : "Hier steht nichts an."}</div></div></div>`;
-  if (fin.length) html += `<div class="sect"><h2>Erledigt</h2><div class="listcard"><ul class="list">${fin.map(i=>row({...i, task:true},{when:when(i), noHint:true})).join("")}</ul></div></div>`;
+  if (fin.length) html += `<div class="sect"><h2>Erledigt <small>· zum Löschen nach links wischen</small></h2><div class="listcard"><ul class="list">${fin.map(i=>row({...i, task:true},{when:when(i), noHint:true, swipe:true})).join("")}</ul></div></div>`;
   return html;
 }
 function pickHint(when){
@@ -499,6 +515,10 @@ function eintragen(auchApple){
   // In der App speichern (jeder Teil einzeln) und sofort im passenden Kästchen zeigen (kein Apple-Fenster).
   const neu = ps.map(t => { let it = items.find(i => i.d === d && i.t.trim().toLowerCase() === t.toLowerCase());
     if (!it){ const e = {t, tag: tagKey(d)}; eigene.push(e); it = eigenesItem(e); items.push(it); }
+    else {   // gab es schon (erledigt oder gelöscht): wieder als offenen Eintrag zeigen
+      if (weg.has(it.id)){ weg.delete(it.id); wegSpeichern(); if (it.eigen) eigene.push({t: it.t, tag: tagKey(d)}); }
+      if (done.has(it.id)){ done.delete(it.id); save(); }
+    }
     return it; });
   eigeneSpeichern();
   merken();   // selbst eingetragen = schon gesehen
@@ -554,7 +574,7 @@ function render(){
     setHeader("Suchen", null);
     html += `<input id="q" class="search" type="search" placeholder="Was suchst du? z. B. Turnbeutel" aria-label="Im Kalender suchen" value="${esc(q)}">`;
     if (q){
-      const hits = items.filter(i=>i.t.toLowerCase().includes(q) || i.hint.toLowerCase().includes(q)).sort((a,b)=>a.d-b.d || byTime(a,b));
+      const hits = items.filter(i=>!weg.has(i.id) && (i.t.toLowerCase().includes(q) || i.hint.toLowerCase().includes(q))).sort((a,b)=>a.d-b.d || byTime(a,b));
       html += hits.length
         ? `<div class="sect"><div class="listcard"><ul class="list">${hits.map(i=>row(i,{noTick:true, when: i.d===0?"Heute":i.d===1?"Morgen":fmtWd.format(dateOf(i.d))})).join("")}</ul></div></div>`
         : `<div class="sect"><div class="listcard"><div class="empty">Dazu habe ich nichts gefunden.<small>Versuch ein anderes Wort.</small></div></div></div>`;
@@ -565,6 +585,29 @@ function render(){
     document.getElementById("q").addEventListener("input", e=>{ q = e.target.value.trim().toLowerCase(); render(); const n = document.getElementById("q"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); });
   }
 }
+function loeschen(id){
+  const it = items.find(i => i.id === id); if (!it) return;
+  const n = it.eigen ? eigene.findIndex(e => "eigen:" + e.t + "@" + e.tag === id) : -1;
+  const alt = n >= 0 ? eigene.splice(n, 1)[0] : null;
+  weg.add(id); if (alt) eigeneSpeichern(); else wegSpeichern();
+  rueck = () => { weg.delete(id); if (alt){ eigene.push(alt); eigeneSpeichern(); } wegSpeichern(); };
+  lastDone = null; render(); toast("Gelöscht", true);
+}
+// Wischen: erledigten Eintrag nach links ziehen. Halb weg = löschen, ein Stück = roter Knopf "Löschen" bleibt stehen.
+let zug = null;
+document.addEventListener("pointerdown", ev => { const r = ev.target.closest(".swrap .row"); if (!r || ev.target.closest(".tick")) return;
+  document.querySelectorAll(".swrap .row").forEach(x => { if (x !== r){ x.style.transform = ""; x.parentElement.classList.remove("auf"); } });
+  zug = {r, x: ev.clientX, y: ev.clientY, dx: 0, an: false, start: r.style.transform ? -r.parentElement.querySelector(".del").offsetWidth : 0}; });
+document.addEventListener("pointermove", ev => { if (!zug) return;
+  const dx = ev.clientX - zug.x, dy = ev.clientY - zug.y;
+  if (!zug.an){ if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)){ if (Math.abs(dy) > 12) zug = null; return; } zug.an = true; zug.r.classList.add("zieht"); zug.r.parentElement.classList.add("auf"); }
+  zug.dx = Math.min(0, zug.start + dx); zug.r.style.transform = "translateX(" + zug.dx + "px)"; });
+const zugEnde = () => { if (!zug) return; const z = zug; zug = null; if (!z.an) return;
+  z.r.classList.remove("zieht"); const w = z.r.offsetWidth, knopf = z.r.parentElement.querySelector(".del");
+  if (-z.dx > w * 0.5){ z.r.style.transform = "translateX(-100%)"; setTimeout(() => loeschen(knopf.dataset.del), 160); }
+  else if (-z.dx > 40) z.r.style.transform = "translateX(-" + knopf.offsetWidth + "px)";
+  else { z.r.style.transform = ""; setTimeout(() => { if (!z.r.style.transform) z.r.parentElement.classList.remove("auf"); }, 200); } };
+document.addEventListener("pointerup", zugEnde); document.addEventListener("pointercancel", zugEnde);
 function toast(text, undoable){
   const t = document.getElementById("toast");
   document.getElementById("toastText").textContent = text;
@@ -599,9 +642,11 @@ document.addEventListener("click", ev=>{
   if (tk){
     const id = tk.dataset.id;
     if (done.has(id)){ done.delete(id); toast("Wieder offen", false); }
-    else { done.add(id); frisch.add(id); lastDone = id; toast("✓ Erledigt", true); }
+    else { done.add(id); frisch.add(id); lastDone = id; rueck = null; toast("✓ Erledigt", true); }
     save(); render(); return;
   }
+  if (ev.target.id==="undo" && rueck){ rueck(); rueck = null; render(); document.getElementById("toast").hidden = true; return; }
+  const dl = ev.target.closest(".del[data-del]"); if (dl){ loeschen(dl.dataset.del); return; }
   if (ev.target.id==="undo" && lastDone){ done.delete(lastDone); lastDone = null; save(); render(); document.getElementById("toast").hidden = true; }
 });
 // Schrift wächst mit "Größere Schrift", aber höchstens bis 20 px Grundgröße (Standard 17 px), danach 3 px kleiner.
@@ -610,6 +655,7 @@ document.addEventListener("click", ev=>{
 const navEl = document.querySelector("nav");
 const setNavH = () => document.documentElement.style.setProperty("--navh", navEl.getBoundingClientRect().height + "px");
 try { new ResizeObserver(setNavH).observe(navEl); } catch(_){} setNavH();
+if (LIVE){ const ids = new Set(items.map(i => i.id)); let geaendert = false; weg.forEach(id => { if (!ids.has(id)){ weg.delete(id); geaendert = true; } }); if (geaendert) wegSpeichern(); }
 if (!gesehen) merken();
 render();
 </script>
