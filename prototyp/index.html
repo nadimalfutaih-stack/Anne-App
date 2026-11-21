@@ -199,7 +199,7 @@ const TILES = ["Einkauf","Geschenke","Kinder","Unterlagen","Arzt","Haushalt","Tr
 // Der Teil nach # wird nie an einen Server geschickt; die Termine bleiben auf dem iPhone.
 // Ohne #d= zeigt die Seite Beispieldaten wie in der Bildvorlage (Uhr fest auf 08:00).
 // Nur Annes Kalender anzeigen; Feiertage, Geburtstage und andere Kalender auf dem iPhone bleiben weg.
-const SHOW_CALS = ["kalender","privat","arbeit","nadim"];
+const SHOW_CALS = ["kalender","privat","arbeit","nadim","unbenannter kalender"];
 function calKey(name){
   const n = (name||"").trim().toLowerCase();
   if (!CALS[n]) CALS[n] = {name: (name||"Kalender").trim(), v:"--muted"};
