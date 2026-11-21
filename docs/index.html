@@ -442,10 +442,11 @@ const fmtVTag = new Intl.DateTimeFormat("de-DE",{weekday:"short",day:"numeric",m
 function vorschlagHTML(){
   const v = vorschlag, tage = [[0,"Heute"],[1,"Morgen"],[2,"Übermorgen"]];
   if (v.d > 2) tage.push([v.d, fmtVTag.format(dateOf(v.d))]);
-  return `<div class="vorschlag"><label for="vText">In den Kalender eintragen:</label>
+  return `<div class="vorschlag"><label for="vText">Eintragen:</label>
     <input id="vText" value="${esc(v.text)}" aria-label="Eintrag">
     <div class="vtage" role="group" aria-label="Tag">${tage.map(([d,n])=>`<button class="vtag${d===v.d?" on":""}" data-vtag="${d}" aria-pressed="${d===v.d}">${n}</button>`).join("")}</div>
-    <button class="vknopf" id="vEintragen">📅 In den Kalender eintragen</button>
+    <button class="vknopf" id="vEintragen">✓ Eintragen</button>
+    <button class="vleise" id="vApple">📅 Auch in den Apple-Kalender</button>
     <div class="vreihe"><button class="vleise" id="vSuchen">Nur suchen</button><button class="vleise" id="vWeg">Abbrechen</button></div></div>`;
 }
 function kalenderDatei(titel, d){
@@ -456,22 +457,21 @@ function kalenderDatei(titel, d){
     "UID:meintag-" + Date.now() + "@meintag","DTSTAMP:" + stamp,"DTSTART;VALUE=DATE:" + f(dateOf(d)),"DTEND;VALUE=DATE:" + f(dateOf(d+1)),
     "SUMMARY:" + tx(titel),"END:VEVENT","END:VCALENDAR"].join("\r\n");
 }
-function eintragen(){
+function eintragen(auchApple){
   const t = (document.getElementById("vText")?.value || vorschlag.text).trim();
   if (!t){ vMsg = "Bitte erst einen Text eingeben."; vOk = false; return render(); }
   const d = vorschlag.d;
-  // 1. Sofort in der App speichern und im passenden Kästchen zeigen.
+  // In der App speichern und sofort im passenden Kästchen zeigen (kein Apple-Fenster).
   let it = items.find(i => i.d === d && i.t.trim().toLowerCase() === t.toLowerCase());
   if (!it){ const e = {t, tag: tagKey(d)}; eigene.push(e); eigeneSpeichern(); it = eigenesItem(e); items.push(it); }
   const kasten = it.cats[0] || "Sonstiges";
   merken();   // selbst eingetragen = schon gesehen
   setView(d === 0 ? "heute" : d === 1 ? "morgen" : "danach"); cat = kasten;
-  // 2. Zusätzlich die Kalender-Datei öffnen, damit es auch im Apple-Kalender steht.
-  const url = URL.createObjectURL(new Blob([kalenderDatei(t, d)], {type:"text/calendar"}));
   vorschlag = null; frage = ""; vOk = true;
-  vMsg = "✓ „" + t + "“ steht jetzt unter " + kasten + ". Im Apple-Fenster „Hinzufügen“ tippen, dann steht es auch im Kalender.";
+  vMsg = "✓ „" + t + "“ steht jetzt unter " + kasten + "." + (auchApple ? " Im Apple-Fenster „Hinzufügen“ tippen." : "");
   render();
-  location.href = url;
+  // Nur auf Wunsch: Kalender-Datei öffnen, das iPhone zeigt dann das Apple-Fenster „Hinzufügen“.
+  if (auchApple) location.href = URL.createObjectURL(new Blob([kalenderDatei(t, d)], {type:"text/calendar"}));
 }
 function setView(v){ view = v; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===v)); }
 // Gesagtes verstehen: Tag + Kästchen, sonst Suche nach dem Wort.
@@ -544,7 +544,8 @@ document.addEventListener("submit", ev=>{
   render(); setTimeout(()=>document.querySelector(".vorschlag")?.scrollIntoView({block:"center", behavior:"smooth"}), 50);
 });
 document.addEventListener("click", ev=>{
-  if (ev.target.closest("#vEintragen")){ eintragen(); return; }
+  if (ev.target.closest("#vEintragen")){ eintragen(false); return; }
+  if (ev.target.closest("#vApple")){ eintragen(true); return; }
   if (ev.target.closest("#vSuchen")){ const t = vorschlag ? (document.getElementById("vText")?.value || vorschlag.text) : frage; vorschlag = null; verstehen(t); return; }
   if (ev.target.closest("#vWeg")){ vorschlag = null; frage = ""; vMsg = ""; render(); return; }
   const vt = ev.target.closest(".vtag[data-vtag]"); if (vt && vorschlag){ vorschlag.text = document.getElementById("vText")?.value ?? vorschlag.text; vorschlag.d = +vt.dataset.vtag; render(); return; }
