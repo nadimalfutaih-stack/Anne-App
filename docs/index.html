@@ -75,6 +75,9 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .vtag.on{background:var(--nav-on);border-color:var(--nav-on);color:#fff}
 .vknopf{font:inherit;font-size:1.05rem;font-weight:700;min-height:52px;border-radius:12px;border:0;background:var(--nav-on);color:#fff;cursor:pointer}
 .vleise{font:inherit;font-size:.95rem;font-weight:600;min-height:44px;border:0;background:none;color:var(--muted);cursor:pointer}
+.vteile{display:flex;flex-wrap:wrap;gap:.3rem .35rem;align-items:center;font-size:.86rem}
+.vteile span{width:100%;color:var(--muted);font-weight:600}
+.vteile b{font-weight:600;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:.15rem .6rem}
 .vreihe{display:flex;justify-content:space-between;gap:.5rem}
 .pick{margin-top:.9rem;display:flex;gap:.7rem;align-items:center;background:var(--card);border-radius:14px;padding:.85rem 1rem}
 .pick span{font-size:1.4rem}
@@ -311,7 +314,26 @@ HINTS.forEach(h => { h.wholeRx = mkRx(h.whole); h.weakRx = mkRx(h.weak || []); }
 const catsFor = t => { const l = (t||"").toLowerCase().normalize("NFC").replace(/\s+/g," ");
   const strong = HINTS.filter(h => (h.words.some(w => l.includes(w)) || (h.wholeRx && h.wholeRx.test(l))) && !(h.except||[]).some(x => l.includes(x))).map(h => h.name);
   return strong.length ? strong : HINTS.filter(h => h.weakRx && h.weakRx.test(l)).map(h => h.name); };
-const items = EXAMPLES.map((e,i)=>{ const cats = catsFor(e.t); return {...e, id: e.key || "e"+i, cats, hint: cats.join(" · "), task: !e.time && !/geburtstag/i.test(e.t)}; });
+// ---------- Listen aufteilen ----------
+// Eine Liste in EINEM Eintrag ("- Milch - Brot - Aspirin") wird in einzelne Einträge zerlegt, damit jeder in sein Kästchen kommt und einzeln abhakbar ist.
+// Kalender-Einträge: nur bei Spiegelstrich-Listen (beginnt mit "-" oder mindestens 3 Teile) – "Arzt - Wim" bleibt ganz.
+// Getipptes/Gesprochenes (weit = true): zusätzlich bei Komma und Semikolon; bei "und" nicht, wenn es um Personen/Verabredungen geht.
+function teile(text, weit){
+  const roh = String(text || "").trim();
+  const putz = x => { x = x.replace(/^[\s\-–—•*]+/,"").replace(/[\s.]+$/,"").trim(); return x ? x.charAt(0).toUpperCase() + x.slice(1) : ""; };
+  let parts = roh.split(/\s+[-–—•]\s+|\n+/).map(putz).filter(Boolean);
+  const startStrich = /^[-–—•]\s/.test(roh);
+  if (!weit) return (startStrich || parts.length >= 3) && parts.length > 1 ? parts : [roh];
+  parts = parts.flatMap(x => x.split(/\s*[,;]\s*/)).map(putz).filter(Boolean);
+  // "und" trennt Listen ("Brot und Aspirin"), aber nicht Personen/Verabredungen: "Hermine und Wim abholen", "Kaffee mit Lisa und Tom" bleiben ganz.
+  parts = parts.flatMap(x => { const u = x.split(/\s+und\s+/i).map(putz).filter(Boolean);
+    const ganz = u.length < 2 || /(^|\s)(mit|bei|von|für|zu|zum|zur)\s/i.test(x) || u.some(y => catsFor(y).some(c => c === "Kinder" || c === "Treffen"));
+    return ganz ? [x] : u; });
+  return parts.length ? parts : (putz(roh) ? [putz(roh)] : []);
+}
+const mkItem = (e, t, id) => { const cats = catsFor(t); return {...e, t, id, cats, hint: cats.join(" · "), task: !e.time && !/geburtstag/i.test(t)}; };
+const items = EXAMPLES.flatMap((e,i)=>{ const id = e.key || "e"+i, ps = teile(e.t, false);
+  return ps.length > 1 ? ps.map((t,n)=>mkItem(e, t, id + "#" + n)) : [mkItem(e, e.t, id)]; });
 // ---------- Eigene Einträge: in der App selbst gespeichert (auf diesem iPhone), damit sie SOFORT im Kästchen stehen ----------
 // Kommt derselbe Eintrag (gleicher Titel, gleicher Tag) später aus dem Kalender, wird die eigene Kopie entfernt.
 const tagKey = d => { const x = dateOf(d); return x.getFullYear() + "-" + String(x.getMonth()+1).padStart(2,"0") + "-" + String(x.getDate()).padStart(2,"0"); };
@@ -323,7 +345,8 @@ function eigenesItem(e){
   const cats = catsFor(e.t);
   return {t: e.t, d, cal: "kalender", id: "eigen:" + e.t + "@" + e.tag, cats, hint: cats.join(" · "), task: !/geburtstag/i.test(e.t), eigen: true};
 }
-eigene = eigene.filter(e => { const it = eigenesItem(e);
+eigene = eigene.flatMap(e => { const ps = teile(e.t, false); return ps.length > 1 ? ps.map(t => ({t, tag: e.tag})) : [e]; });
+eigene = eigene.filter((e, n) => { const it = eigenesItem(e);
   if (isNaN(it.d) || it.d < 0) return false;
   if (items.some(i => i.d === it.d && i.t.trim().toLowerCase() === e.t.trim().toLowerCase())) return false;
   items.push(it); return true; });
@@ -439,11 +462,17 @@ function vorschlagAus(text){
   return {text: t, d};
 }
 const fmtVTag = new Intl.DateTimeFormat("de-DE",{weekday:"short",day:"numeric",month:"short"});
+function teileHTML(text){
+  const ps = teile(text, true);
+  if (ps.length < 2) return "";
+  return `<div class="vteile"><span>${ps.length} einzelne Einträge:</span>${ps.map(x => { const c = catsFor(x)[0] || OTHER.name; const k = TILES.find(k => k.name === c); return `<b>${k ? k.icon + " " : ""}${esc(x)}</b>`; }).join("")}</div>`;
+}
 function vorschlagHTML(){
   const v = vorschlag, tage = [[0,"Heute"],[1,"Morgen"],[2,"Übermorgen"]];
   if (v.d > 2) tage.push([v.d, fmtVTag.format(dateOf(v.d))]);
   return `<div class="vorschlag"><label for="vText">Eintragen:</label>
     <input id="vText" value="${esc(v.text)}" aria-label="Eintrag">
+    <div id="vTeile">${teileHTML(v.text)}</div>
     <div class="vtage" role="group" aria-label="Tag">${tage.map(([d,n])=>`<button class="vtag${d===v.d?" on":""}" data-vtag="${d}" aria-pressed="${d===v.d}">${n}</button>`).join("")}</div>
     <button class="vknopf" id="vEintragen">✓ Eintragen</button>
     <button class="vleise" id="vApple">📅 Auch in den Apple-Kalender</button>
@@ -453,25 +482,29 @@ function kalenderDatei(titel, d){
   const f = x => x.getFullYear() + String(x.getMonth()+1).padStart(2,"0") + String(x.getDate()).padStart(2,"0");
   const tx = s => s.replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g," ");
   const stamp = new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
-  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//MeinTag//DE","METHOD:PUBLISH","BEGIN:VEVENT",
-    "UID:meintag-" + Date.now() + "@meintag","DTSTAMP:" + stamp,"DTSTART;VALUE=DATE:" + f(dateOf(d)),"DTEND;VALUE=DATE:" + f(dateOf(d+1)),
-    "SUMMARY:" + tx(titel),"END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const ev = [].concat(titel).flatMap((t, n) => ["BEGIN:VEVENT","UID:meintag-" + Date.now() + "-" + n + "@meintag","DTSTAMP:" + stamp,
+    "DTSTART;VALUE=DATE:" + f(dateOf(d)),"DTEND;VALUE=DATE:" + f(dateOf(d+1)),"SUMMARY:" + tx(t),"END:VEVENT"]);
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//MeinTag//DE","METHOD:PUBLISH", ...ev, "END:VCALENDAR"].join("\r\n");
 }
 function eintragen(auchApple){
-  const t = (document.getElementById("vText")?.value || vorschlag.text).trim();
-  if (!t){ vMsg = "Bitte erst einen Text eingeben."; vOk = false; return render(); }
+  const text = (document.getElementById("vText")?.value || vorschlag.text).trim();
+  const ps = teile(text, true);
+  if (!ps.length){ vMsg = "Bitte erst einen Text eingeben."; vOk = false; return render(); }
   const d = vorschlag.d;
-  // In der App speichern und sofort im passenden Kästchen zeigen (kein Apple-Fenster).
-  let it = items.find(i => i.d === d && i.t.trim().toLowerCase() === t.toLowerCase());
-  if (!it){ const e = {t, tag: tagKey(d)}; eigene.push(e); eigeneSpeichern(); it = eigenesItem(e); items.push(it); }
-  const kasten = it.cats[0] || "Sonstiges";
+  // In der App speichern (jeder Teil einzeln) und sofort im passenden Kästchen zeigen (kein Apple-Fenster).
+  const neu = ps.map(t => { let it = items.find(i => i.d === d && i.t.trim().toLowerCase() === t.toLowerCase());
+    if (!it){ const e = {t, tag: tagKey(d)}; eigene.push(e); it = eigenesItem(e); items.push(it); }
+    return it; });
+  eigeneSpeichern();
   merken();   // selbst eingetragen = schon gesehen
-  setView(d === 0 ? "heute" : d === 1 ? "morgen" : "danach"); cat = kasten;
+  const kasten = neu[0].cats[0] || OTHER.name;
+  setView(d === 0 ? "heute" : d === 1 ? "morgen" : "danach");
+  cat = ps.length === 1 ? kasten : null;   // bei mehreren: Kästchen-Übersicht zeigen, die Zahlen sind gestiegen
   vorschlag = null; frage = ""; vOk = true;
-  vMsg = "✓ „" + t + "“ steht jetzt unter " + kasten + "." + (auchApple ? " Im Apple-Fenster „Hinzufügen“ tippen." : "");
+  vMsg = (ps.length === 1 ? "✓ „" + ps[0] + "“ steht jetzt unter " + kasten + "." : "✓ " + ps.length + " Einträge sind in ihre Kästchen einsortiert.") + (auchApple ? " Im Apple-Fenster „Hinzufügen“ tippen." : "");
   render();
   // Nur auf Wunsch: Kalender-Datei öffnen, das iPhone zeigt dann das Apple-Fenster „Hinzufügen“.
-  if (auchApple) location.href = URL.createObjectURL(new Blob([kalenderDatei(t, d)], {type:"text/calendar"}));
+  if (auchApple) location.href = URL.createObjectURL(new Blob([kalenderDatei(ps, d)], {type:"text/calendar"}));
 }
 function setView(v){ view = v; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===v)); }
 // Gesagtes verstehen: Tag + Kästchen, sonst Suche nach dem Wort.
@@ -532,6 +565,7 @@ function toast(text, undoable){
   document.getElementById("undo").hidden = !undoable;
   t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ t.hidden = true; }, 5000);
 }
+document.addEventListener("input", ev=>{ if (ev.target.id === "vText"){ const el = document.getElementById("vTeile"); if (el) el.innerHTML = teileHTML(ev.target.value); } });
 document.addEventListener("submit", ev=>{
   if (ev.target.id !== "frageForm") return;
   ev.preventDefault();
