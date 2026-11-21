@@ -74,9 +74,9 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .wahl[aria-pressed="true"]::before{background:var(--fg)}
 .wahl span{position:relative}
 .wahltipp{font-size:.86rem;color:var(--muted);text-align:center;margin:.8rem 0 4.2rem}
-.wahlbar{position:fixed;z-index:25;left:50%;transform:translateX(-50%);bottom:calc(var(--navh,5.4rem) + .5rem);width:min(calc(100% - 1.6rem),26rem);background:var(--nav-on);color:#fff;border-radius:16px;padding:.4rem .4rem .4rem 1rem;display:flex;gap:.4rem;align-items:center;font-weight:700;box-shadow:0 8px 22px rgba(23,54,83,.3)}
-.wahlbar span{margin-right:auto}
-.wahlbar button{font:inherit;font-weight:700;min-height:46px;border:0;border-radius:12px;padding:.3rem .95rem;cursor:pointer;background:rgba(255,255,255,.16);color:#fff}
+.wahlbar{position:fixed;z-index:25;left:1.2rem;right:1.2rem;margin-inline:auto;max-width:23rem;box-sizing:border-box;bottom:calc(var(--navh,5.4rem) + .5rem);background:var(--nav-on);color:#fff;border-radius:14px;padding:.3rem .3rem .3rem .85rem;display:flex;gap:.35rem;align-items:center;font-size:.93rem;font-weight:700;box-shadow:0 8px 22px rgba(23,54,83,.3)}
+.wahlbar span{margin-right:auto;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.wahlbar button{flex:none;font:inherit;font-weight:700;min-height:40px;border:0;border-radius:10px;padding:.2rem .75rem;cursor:pointer;background:rgba(255,255,255,.16);color:#fff;white-space:nowrap}
 .wahlbar button.rot{background:#C62835}
 .ftipp.ok{color:#2F6B45;font-weight:600}
 /* Karte "In den Kalender eintragen" */
