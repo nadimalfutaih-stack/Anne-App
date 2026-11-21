@@ -335,9 +335,33 @@ const items = EXAMPLES.flatMap((e,i)=>{ const id = e.key || "e"+i, ps = teile(e.
 // ---------- Eigene Einträge: in der App selbst gespeichert (auf diesem iPhone), damit sie SOFORT im Kästchen stehen ----------
 // Kommt derselbe Eintrag (gleicher Titel, gleicher Tag) später aus dem Kalender, wird die eigene Kopie entfernt.
 const tagKey = d => { const x = dateOf(d); return x.getFullYear() + "-" + String(x.getMonth()+1).padStart(2,"0") + "-" + String(x.getDate()).padStart(2,"0"); };
+// Ein Datum im Text erkennen ("am 28. Dezember", "28.12.", "am 28.", "in 3 Tagen", "nächste Woche") und aus dem Titel nehmen.
+// Liegt das Datum dieses Jahr schon in der Vergangenheit, ist nächstes Jahr gemeint. Gibt {t, d} zurück oder null.
+function datumAus(text){
+  const MON = ["jan","feb","mär|maer|mar","apr","mai","jun","jul","aug","sep","okt","nov","dez"];
+  const ZAHL = {einem:1,einer:1,ein:1,zwei:2,drei:3,vier:4,fünf:5,sechs:6,sieben:7,acht:8,neun:9,zehn:10};
+  const tage = (tag, mon, jahr) => { let x = new Date(jahr || today.getFullYear(), mon, tag);
+    if (x.getMonth() !== mon || x.getDate() !== tag) return null;
+    if (!jahr && x < today) x = new Date(today.getFullYear() + 1, mon, tag);
+    return Math.round((x - today) / 864e5); };
+  const fertig = (m, d) => (d === null || d < 0) ? null : {t: text.replace(m[0], " ").replace(/\s+/g, " ").trim(), d};
+  let m = text.match(new RegExp("(?:^|\\s)(?:am\\s+|den\\s+|zum\\s+|für\\s+den\\s+)?(\\d{1,2})\\.?\\s*(" + MON.map(x => "(?:" + x + ")\\p{L}*").join("|") + ")\\.?(?:\\s+(\\d{4}))?(?=$|[\\s,.!?])", "iu"));
+  if (m){ const mon = MON.findIndex(x => new RegExp("^(?:" + x + ")", "i").test(m[2])); return fertig(m, tage(+m[1], mon, m[3] ? +m[3] : 0)); }
+  m = text.match(/(?:^|\s)(?:am\s+|den\s+|zum\s+)?(\d{1,2})\.\s?(\d{1,2})\.(\d{4}|\d{2})?(?=$|[\s,.!?])/i);
+  if (m) return fertig(m, tage(+m[1], +m[2] - 1, m[3] ? (m[3].length === 2 ? 2000 + +m[3] : +m[3]) : 0));
+  m = text.match(/(?:^|\s)(?:am|den|zum)\s+(\d{1,2})\.(?=$|\s)/i);
+  if (m){ const tag = +m[1]; let d = tage(tag, today.getMonth(), today.getFullYear()); if (d === null || d < 0) d = tage(tag, (today.getMonth() + 1) % 12, today.getFullYear() + (today.getMonth() === 11 ? 1 : 0)); return fertig(m, d); }
+  m = text.match(/(?:^|\s)in\s+(\d{1,3}|einem|einer|ein|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn)\s+(tag|tagen|woche|wochen)(?=$|[\s,.!?])/i);
+  if (m){ const n = ZAHL[m[1].toLowerCase()] || +m[1]; return fertig(m, n * (/woche/i.test(m[2]) ? 7 : 1)); }
+  m = text.match(/(?:^|\s)(?:nächste|naechste|kommende)\s+woche(?=$|[\s,.!?])/i);
+  if (m) return fertig(m, 7);
+  return null;
+}
 let eigene = [];
 try { eigene = JSON.parse(localStorage.getItem("meintag-eigene") || "[]"); } catch(_){}
 const eigeneSpeichern = () => { try { localStorage.setItem("meintag-eigene", JSON.stringify(eigene)); } catch(_){} };
+// Ältere eigene Einträge, bei denen das Datum noch im Titel steht ("Milch kaufen am 28. Dezember"), auf den richtigen Tag legen.
+eigene = eigene.map(e => { const r = datumAus(e.t); return r && r.t ? {t: r.t.charAt(0).toUpperCase() + r.t.slice(1), tag: tagKey(r.d)} : e; });
 function eigenesItem(e){
   const [y,m,t] = e.tag.split("-").map(Number); const d = Math.round((new Date(y, m-1, t) - today) / 864e5);
   const cats = catsFor(e.t);
@@ -463,7 +487,9 @@ const WTAG = ["sonntag","montag","dienstag","mittwoch","donnerstag","freitag","s
 const IST_FRAGE = /^(was|wann|wo|wer|wie|welche[srnm]?|zeig(e)?|gibt es|habe ich|hab ich|muss ich|steht|stehen|such(e)?)\b/i;
 function vorschlagAus(text){
   let t = " " + text.trim().replace(/[„“"]/g,"") + " ", d = 0; const l = t.toLowerCase();
-  if (/ übermorgen[ .,!?]/.test(l)) d = 2; else if (/ morgen[ .,!?]/.test(l)) d = 1;
+  const dat = datumAus(t);
+  if (dat){ t = " " + dat.t + " "; d = dat.d; }
+  else if (/ übermorgen[ .,!?]/.test(l)) d = 2; else if (/ morgen[ .,!?]/.test(l)) d = 1;
   else { const w = WTAG.findIndex(x => l.includes(" " + x)); if (w >= 0) d = (w - today.getDay() + 7) % 7 || 7; }
   t = t.replace(/\s(am\s+)?(heute|übermorgen|morgen|sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag)(?=[\s,.!?])/gi," ");
   t = t.replace(/^\s*(bitte\s+)?(trag(e)?\s+(mir\s+)?(bitte\s+)?ein:?|eintragen:?|notier(e)?:?|erinner(e)?\s+mich\s+(an|daran):?)\s*/i,"")
