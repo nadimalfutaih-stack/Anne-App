@@ -465,9 +465,14 @@ function catView(){
   const nOffen = list.filter(i=>!done.has(i.id)).length;
   const when = i => i.d>1 ? fmtWd.format(dateOf(i.d)) : "";
   let html = `<div class="cathead"><h2>${t.icon} ${t.name}</h2><span>${nOffen} offen${nNeu ? ` · ${nNeu} neu` : ""}</span><button class="catclose" data-cat="${t.name}">Alle zeigen</button></div>`;
-  html += open.length
-    ? `<div class="sect"><div class="listcard"><ul class="list">${open.map(i=>row({...i, task:true},{when:when(i), noHint:true, swipe:done.has(i.id)})).join("")}</ul></div></div>`
-    : `<div class="sect"><div class="listcard"><div class="empty">${fin.length ? "Alles erledigt. Schön!" : "Hier steht nichts an."}</div></div></div>`;
+  const zeile = (i, mitTag) => row({...i, task:true},{when: mitTag ? when(i) : "", noHint:true, swipe:done.has(i.id)});
+  if (!open.length) html += `<div class="sect"><div class="listcard"><div class="empty">${fin.length ? "Alles erledigt. Schön!" : "Hier steht nichts an."}</div></div></div>`;
+  else if (view === "danach"){
+    // "Danach": jeder Tag bekommt eine eigene Überschrift, der nächste Tag zuerst; darunter die Einträge dieses Tages.
+    const tage = [...new Set(open.map(i => i.d))].sort((a,b) => a-b);
+    html += tage.map(d => `<div class="sect"><h2>${fmtWd.format(dateOf(d))}</h2><div class="listcard"><ul class="list">${open.filter(i => i.d === d).map(i => zeile(i, false)).join("")}</ul></div></div>`).join("");
+  }
+  else html += `<div class="sect"><div class="listcard"><ul class="list">${open.map(i => zeile(i, true)).join("")}</ul></div></div>`;
   if (fin.length) html += `<div class="sect"><h2>Erledigt <small>· zum Löschen nach links wischen</small></h2><div class="listcard"><ul class="list">${fin.map(i=>row({...i, task:true},{when:when(i), noHint:true, swipe:true})).join("")}</ul></div></div>`;
   return html;
 }
