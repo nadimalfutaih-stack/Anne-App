@@ -570,7 +570,10 @@ function render(){
         : `<div class="sect"><div class="listcard"><div class="empty">Dazu habe ich nichts gefunden.<small>Versuch ein anderes Wort.</small></div></div></div>`;
     }
   }
+  // Bildschirm bleibt beim Abhaken/Löschen genau dort stehen, wo er war (kein Springen nach oben).
+  const y = window.scrollY; v.style.minHeight = v.offsetHeight + "px";
   v.innerHTML = html;
+  window.scrollTo(0, y); requestAnimationFrame(() => { v.style.minHeight = ""; if (Math.abs(window.scrollY - y) > 1) window.scrollTo(0, Math.min(y, document.documentElement.scrollHeight - innerHeight)); });
   if (view==="suchen"){
     document.getElementById("q").addEventListener("input", e=>{ q = e.target.value.trim().toLowerCase(); render(); const n = document.getElementById("q"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); });
   }
@@ -633,7 +636,7 @@ document.addEventListener("click", ev=>{
     const id = tk.dataset.id;
     if (done.has(id)){ done.delete(id); toast("Wieder offen", false); }
     else { done.add(id); frisch.add(id); lastDone = id; rueck = null; toast("✓ Erledigt", true); }
-    save(); render(); return;
+    save(); tk.blur(); render(); return;
   }
   if (ev.target.id==="undo" && rueck){ rueck(); rueck = null; render(); document.getElementById("toast").hidden = true; return; }
   const dl = ev.target.closest(".del[data-del]"); if (dl){ loeschen(dl.dataset.del); return; }
