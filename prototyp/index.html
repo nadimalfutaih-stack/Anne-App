@@ -552,6 +552,15 @@ function eintragen(auchApple){
   // Nur auf Wunsch: Kalender-Datei öffnen, das iPhone zeigt dann das Apple-Fenster „Hinzufügen“.
   if (auchApple) location.href = URL.createObjectURL(new Blob([kalenderDatei(ps, d)], {type:"text/calendar"}));
 }
+// Suche: jedes Wort einzeln, Reihenfolge egal, auch als Wortteil ("geburtstag" findet "Kindergeburtstag").
+// Endungen wie in "Hermines" oder "Geschenke" stören nicht; kleine Füllwörter werden übersprungen.
+const SUCH_FUELL = new Set("der die das den dem des ein eine einen einem einer für fuer von vom mit und oder am im in zu zum zur bei an auf".split(" "));
+function passt(i, frage){
+  const text = (i.t + " " + i.hint).toLowerCase();
+  const ws = String(frage).toLowerCase().replace(/[.,!?„“"'’]/g," ").split(/\s+/).filter(w => w && !SUCH_FUELL.has(w));
+  if (!ws.length) return false;
+  return ws.every(w => text.includes(w) || [/(es|en|er|s|e|n)$/].some(rx => { const k = w.replace(rx, ""); return k.length >= 3 && k !== w && text.includes(k); }));
+}
 function setView(v){ view = v; document.querySelectorAll("nav button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===v)); }
 // Gesagtes verstehen: Tag + Kästchen, sonst Suche nach dem Wort.
 const SPRACH_KAESTCHEN = [
@@ -576,7 +585,7 @@ function verstehen(text){
   if (k){ setView(tag || (view==="suchen" ? "heute" : view)); cat = k[0]; vMsg = ""; return render(); }
   const wort = l.trim().split(" ").filter(w => w && !FUELL.has(w)).join(" ");
   if (!wort && tag){ setView(tag); cat = null; vMsg = ""; return render(); }
-  if (wort && items.some(i => i.t.toLowerCase().includes(wort) || i.hint.toLowerCase().includes(wort))){ setView("suchen"); cat = null; q = wort; vMsg = ""; return render(); }
+  if (wort && items.some(i => !weg.has(i.id) && passt(i, wort))){ setView("suchen"); cat = null; q = wort; vMsg = ""; return render(); }
   const c = catsFor(wort || text)[0];
   if (c){ setView(tag || (view==="suchen" ? "heute" : view)); cat = c; vMsg = ""; return render(); }
   vMsg = "Das habe ich nicht verstanden. Versuch es noch einmal."; render();
@@ -595,7 +604,7 @@ function render(){
     setHeader("Suchen", null);
     html += `<input id="q" class="search" type="search" placeholder="Was suchst du? z. B. Turnbeutel" aria-label="Im Kalender suchen" value="${esc(q)}">`;
     if (q){
-      const hits = items.filter(i=>!weg.has(i.id) && (i.t.toLowerCase().includes(q) || i.hint.toLowerCase().includes(q))).sort((a,b)=>a.d-b.d || byTime(a,b));
+      const hits = items.filter(i=>!weg.has(i.id) && passt(i, q)).sort((a,b)=>a.d-b.d || byTime(a,b));
       html += hits.length
         ? `<div class="sect"><div class="listcard"><ul class="list">${hits.map(i=>row(i,{noTick:true, when: i.d===0?"Heute":i.d===1?"Morgen":fmtWd.format(dateOf(i.d))})).join("")}</ul></div></div>`
         : `<div class="sect"><div class="listcard"><div class="empty">Dazu habe ich nichts gefunden.<small>Versuch ein anderes Wort.</small></div></div></div>`;
