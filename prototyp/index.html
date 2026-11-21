@@ -413,13 +413,18 @@ function tilesHTML(){
     return `<button class="tile${cat===t.name?" on":""}${nn?" has-neu":""}" data-cat="${t.name}" style="--tc:${t.color}" aria-pressed="${cat===t.name}"><span class="ic" aria-hidden="true">${t.icon}</span><b>${t.name}</b><small>${when}</small>${open.length?`<span class="n">${open.length}</span>`:""}${nn?`<span class="nb">${nn} NEU</span>`:""}</button>`;
   }).join("")}</div></div>`;
 }
+const frisch = new Set(); let frischKey = "";
 function catView(){
   const t = TILES.find(x=>x.name===cat);
   const list = items.filter(i=>inView(i) && inCat(i, cat)).sort((a,b)=>(istNeu(b)-istNeu(a)) || a.d-b.d || byTime(a,b));
   const nNeu = list.filter(i=>istNeu(i) && !done.has(i.id)).length;
-  const open = list.filter(i=>!done.has(i.id)), fin = list.filter(i=>done.has(i.id));
+  // Gerade abgehakte Einträge bleiben an ihrem Platz stehen (durchgestrichen), damit man mehrere hintereinander abhaken kann.
+  // Erst beim nächsten Öffnen des Kästchens rutschen sie nach unten zu "Erledigt".
+  const key = view + "|" + cat; if (key !== frischKey){ frischKey = key; frisch.clear(); }
+  const open = list.filter(i=>!done.has(i.id) || frisch.has(i.id)), fin = list.filter(i=>done.has(i.id) && !frisch.has(i.id));
+  const nOffen = list.filter(i=>!done.has(i.id)).length;
   const when = i => i.d>1 ? fmtWd.format(dateOf(i.d)) : "";
-  let html = `<div class="cathead"><h2>${t.icon} ${t.name}</h2><span>${open.length} offen${nNeu ? ` · ${nNeu} neu` : ""}</span><button class="catclose" data-cat="${t.name}">Alle zeigen</button></div>`;
+  let html = `<div class="cathead"><h2>${t.icon} ${t.name}</h2><span>${nOffen} offen${nNeu ? ` · ${nNeu} neu` : ""}</span><button class="catclose" data-cat="${t.name}">Alle zeigen</button></div>`;
   html += open.length
     ? `<div class="sect"><div class="listcard"><ul class="list">${open.map(i=>row({...i, task:true},{when:when(i), noHint:true})).join("")}</ul></div></div>`
     : `<div class="sect"><div class="listcard"><div class="empty">${fin.length ? "Alles erledigt. Schön!" : "Hier steht nichts an."}</div></div></div>`;
@@ -526,6 +531,7 @@ function verstehen(text){
   vMsg = "Das habe ich nicht verstanden. Versuch es noch einmal."; render();
 }
 function render(){
+  if (!cat){ frisch.clear(); frischKey = ""; }
   const v = document.getElementById("view");
   let html = "";
   if (view==="heute"){ setHeader("Heute", 0); html += tilesHTML() + frageHTML() + (cat ? catView() : pickHint("heute")); }
@@ -583,7 +589,7 @@ document.addEventListener("click", ev=>{
   if (tk){
     const id = tk.dataset.id;
     if (done.has(id)){ done.delete(id); toast("Wieder offen", false); }
-    else { done.add(id); lastDone = id; toast("✓ Erledigt", true); }
+    else { done.add(id); frisch.add(id); lastDone = id; toast("✓ Erledigt", true); }
     save(); render(); return;
   }
   if (ev.target.id==="undo" && lastDone){ done.delete(lastDone); lastDone = null; save(); render(); document.getElementById("toast").hidden = true; }
