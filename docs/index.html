@@ -70,13 +70,24 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .alles small{font-weight:600;color:var(--muted);font-size:.86rem}
 .alles:active{transform:scale(.99)}
 .sect h2.grp{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem}
-.zl{display:grid;grid-template-columns:4.4rem minmax(0,1fr) auto;gap:.6rem;align-items:center;padding:.5rem .85rem;border-bottom:1px solid var(--line);min-height:3.2rem}
+.zl{display:grid;grid-template-columns:4.4rem minmax(0,1fr) auto auto;cursor:pointer;gap:.6rem;align-items:center;padding:.5rem .85rem;border-bottom:1px solid var(--line);min-height:3.2rem}
 .zl:last-child{border-bottom:0}
 .zl .dt{font-size:.82rem;color:var(--muted);line-height:1.2}
 .zl .dt b{display:block;font-size:.95rem;color:var(--fg)}
 .zl .zt{font-weight:600;overflow-wrap:anywhere}
 .zl .zt small{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}
 .zl .zk{font-size:1.15rem;white-space:nowrap}
+.zl{padding-right:.45rem}
+.zl.gewaehlt{background:#FFF6D9}
+.wahl{width:2.6rem;height:2.6rem;min-width:44px;min-height:44px;border-radius:50%;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;padding:0;color:var(--card);font-size:1.05rem;font-weight:800;position:relative}
+.wahl::before{content:"";position:absolute;inset:.55rem;border-radius:50%;border:2px solid var(--fg)}
+.wahl[aria-pressed="true"]::before{background:var(--fg)}
+.wahl span{position:relative}
+.wahltipp{font-size:.86rem;color:var(--muted);text-align:center;margin:.8rem 0 4.2rem}
+.wahlbar{position:fixed;z-index:25;left:50%;transform:translateX(-50%);bottom:calc(var(--navh,5.4rem) + .5rem);width:min(calc(100% - 1.6rem),26rem);background:var(--nav-on);color:#fff;border-radius:16px;padding:.4rem .4rem .4rem 1rem;display:flex;gap:.4rem;align-items:center;font-weight:700;box-shadow:0 8px 22px rgba(23,54,83,.3)}
+.wahlbar span{margin-right:auto}
+.wahlbar button{font:inherit;font-weight:700;min-height:46px;border:0;border-radius:12px;padding:.3rem .95rem;cursor:pointer;background:rgba(255,255,255,.16);color:#fff}
+.wahlbar button.rot{background:#C62835}
 .ftipp.ok{color:#2F6B45;font-weight:600}
 /* Karte "In den Kalender eintragen" */
 .vorschlag{margin-top:.7rem;background:var(--card);border:2px solid var(--next);border-radius:14px;padding:.8rem;display:grid;gap:.55rem}
@@ -505,6 +516,7 @@ function pickHint(when){
 // ---------- Fragefeld (statt Sprachknopf) ----------
 let vMsg = "", frage = "";
 // ---------- "Alles, was kommt": Übersicht über alle offenen Einträge, nach Wochen und Monaten ----------
+const auswahl = new Set();   // in "Alles, was kommt" angetippte Einträge
 const kommt = () => items.filter(i => !weg.has(i.id) && !done.has(i.id) && i.d >= 0).sort((a,b) => a.d - b.d || byTime(a,b));
 function allesKnopf(){ const n = kommt().length; return `<button class="alles" id="alles">🗓 Alles, was kommt <small>· ${n} ${n === 1 ? "Eintrag" : "Einträge"}</small></button>`; }
 const fmtKurzTag = new Intl.DateTimeFormat("de-DE",{day:"numeric",month:"short"});
@@ -521,9 +533,12 @@ function allesView(){
     else if (i.d <= bisSo + 7) gruppe("w1", "Nächste Woche", fmtKurzTag.format(dateOf(bisSo + 1)) + " – " + fmtKurzTag.format(dateOf(bisSo + 7))).rows.push(i);
     else gruppe("m" + x.getFullYear() + "-" + x.getMonth(), fmtMonat.format(x) + (x.getFullYear() !== today.getFullYear() ? " " + x.getFullYear() : ""), "").rows.push(i); });
   const zeile = i => { const k = i.cats.map(c => (TILES.find(t => t.name === c) || {}).icon).filter(Boolean).join(" ") || OTHER.icon;
+    const gew = auswahl.has(i.id);
     const wd = i.d === 0 ? "Heute" : i.d === 1 ? "Morgen" : fmtWdKurz.format(dateOf(i.d)).replace(".","");
-    return `<li class="zl"><div class="dt"><b>${wd}</b>${fmtKurzTag.format(dateOf(i.d))}</div><div class="zt">${esc(i.t)}${i.time ? `<small>${i.time} Uhr</small>` : ""}</div><div class="zk" aria-hidden="true">${k}</div></li>`; };
-  return gruppen.map(g => `<div class="sect"><h2 class="grp">${g.titel}<small>${g.sub || (g.rows.length === 1 ? "1 Eintrag" : g.rows.length + " Einträge")}</small></h2><div class="listcard"><ul class="list">${g.rows.map(zeile).join("")}</ul></div></div>`).join("");
+    return `<li class="zl${gew ? " gewaehlt" : ""}" data-zeile="${esc(i.id)}"><div class="dt"><b>${wd}</b>${fmtKurzTag.format(dateOf(i.d))}</div><div class="zt">${esc(i.t)}${i.time ? `<small>${i.time} Uhr</small>` : ""}</div><div class="zk" aria-hidden="true">${k}</div><button class="wahl" data-wahl="${esc(i.id)}" aria-pressed="${auswahl.has(i.id)}" aria-label="Auswählen: ${esc(i.t)}"><span>${auswahl.has(i.id) ? "✓" : ""}</span></button></li>`; };
+  return gruppen.map(g => `<div class="sect"><h2 class="grp">${g.titel}<small>${g.sub || (g.rows.length === 1 ? "1 Eintrag" : g.rows.length + " Einträge")}</small></h2><div class="listcard"><ul class="list">${g.rows.map(zeile).join("")}</ul></div></div>`).join("")
+    + `<div class="wahltipp">Kreis antippen, dann „Löschen“ – für alles, was schon erledigt ist.</div>`
+    + (auswahl.size ? `<div class="wahlbar" role="group" aria-label="Auswahl"><span>${auswahl.size} ausgewählt</span><button id="wahlWeg">Abbrechen</button><button id="wahlLoeschen" class="rot">Löschen</button></div>` : "");
 }
 function frageHTML(){
   return `<form class="frage" id="frageForm" role="search" autocomplete="off"><input id="frage" type="text" enterkeyhint="go" value="${esc(frage)}" placeholder="z. B. Was muss ich morgen kaufen?" aria-label="Frage an Mein Tag"><button type="submit">Los</button></form>
@@ -554,7 +569,7 @@ function teileHTML(text){
 }
 function vorschlagHTML(){
   const v = vorschlag, tage = [[0,"Heute"],[1,"Morgen"],[2,"Übermorgen"]];
-  if (v.d > 2) tage.push([v.d, fmtVTag.format(dateOf(v.d))]);
+  if (v.d > 2) tage.push([v.d, fmtVTag.format(dateOf(v.d)) + (dateOf(v.d).getFullYear() !== today.getFullYear() ? " " + dateOf(v.d).getFullYear() : "")]);
   return `<div class="vorschlag"><label for="vText">Eintragen:</label>
     <input id="vText" value="${esc(v.text)}" aria-label="Eintrag">
     <div id="vTeile">${teileHTML(v.text)}</div>
@@ -634,6 +649,7 @@ function verstehen(text){
   vMsg = "Das habe ich nicht verstanden. Versuch es noch einmal."; render();
 }
 function render(){
+  if (view !== "alles") auswahl.clear();
   if (!cat){ frisch.clear(); frischKey = ""; }
   const v = document.getElementById("view");
   let html = "";
@@ -664,13 +680,17 @@ function render(){
     document.getElementById("q").addEventListener("input", e=>{ q = e.target.value.trim().toLowerCase(); render(); const n = document.getElementById("q"); n.focus(); n.setSelectionRange(n.value.length, n.value.length); });
   }
 }
-function loeschen(id){
-  const it = items.find(i => i.id === id); if (!it) return;
-  const n = it.eigen ? eigene.findIndex(e => "eigen:" + e.t + "@" + e.tag === id) : -1;
-  const alt = n >= 0 ? eigene.splice(n, 1)[0] : null;
-  weg.add(id); if (alt) eigeneSpeichern(); else wegSpeichern();
-  rueck = () => { weg.delete(id); if (alt){ eigene.push(alt); eigeneSpeichern(); } wegSpeichern(); };
-  lastDone = null; render(); toast("Gelöscht", true);
+function loeschen(id){ loeschenViele([id]); }
+function loeschenViele(ids){
+  const zurueck = [];
+  ids.forEach(id => { const it = items.find(i => i.id === id); if (!it || weg.has(id)) return;
+    const n = it.eigen ? eigene.findIndex(e => "eigen:" + e.t + "@" + e.tag === id) : -1;
+    const alt = n >= 0 ? eigene.splice(n, 1)[0] : null;
+    weg.add(id); zurueck.push(() => { weg.delete(id); if (alt) eigene.push(alt); }); });
+  if (!zurueck.length) return;
+  eigeneSpeichern(); wegSpeichern();
+  rueck = () => { zurueck.forEach(f => f()); eigeneSpeichern(); wegSpeichern(); };
+  lastDone = null; auswahl.clear(); render(); toast(zurueck.length === 1 ? "Gelöscht" : zurueck.length + " gelöscht", true);
 }
 // Wischen: erledigten Eintrag nach links ziehen. Halb weg = löschen, ein Stück = roter Knopf "Löschen" bleibt stehen.
 let zug = null;
@@ -714,6 +734,9 @@ document.addEventListener("submit", ev=>{
   render(); setTimeout(()=>document.querySelector(".vorschlag")?.scrollIntoView({block:"center", behavior:"smooth"}), 50);
 });
 document.addEventListener("click", ev=>{
+  if (ev.target.closest("#wahlLoeschen")){ loeschenViele([...auswahl]); return; }
+  if (ev.target.closest("#wahlWeg")){ auswahl.clear(); render(); return; }
+  const zl = ev.target.closest(".zl[data-zeile]"); if (zl){ const id = zl.dataset.zeile; if (auswahl.has(id)) auswahl.delete(id); else auswahl.add(id); render(); return; }
   if (ev.target.closest("#alles")){ setView("alles"); cat = null; vMsg = ""; frage = ""; render(); window.scrollTo(0,0); return; }
   if (ev.target.closest("#vEintragen")){ eintragen(false); return; }
   if (ev.target.closest("#vApple")){ eintragen(true); return; }
