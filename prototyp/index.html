@@ -417,7 +417,7 @@ function row(i, opts={}){
   const tag = isDone ? `<span class="donetag">✓ Erledigt</span>` : "";
   const nt = istNeu(i) && !isDone ? `<span class="neutag">NEU</span>` : "";
   const inhalt = `${time}<span class="bar"></span><div class="t"><span class="txt">${esc(i.t)}</span>${nt}${tag}<span class="cal">${meta}</span></div>${right}`;
-  if (opts.swipe) return `<li class="swrap"><button class="del" data-del="${esc(i.id)}" aria-label="Löschen: ${esc(i.t)}">Löschen</button><div class="row done" style="--c:${calVar(i)}">${inhalt}</div></li>`;
+  if (opts.swipe) return `<li class="swrap"><button class="del" data-del="${esc(i.id)}" aria-label="Löschen: ${esc(i.t)}">Löschen</button><div class="row${isDone?" done":""}" style="--c:${calVar(i)}">${inhalt}</div></li>`;
   return `<li class="row${isDone?" done":""}${nt?" neu":""}" style="--c:${calVar(i)}">${inhalt}</li>`;
 }
 function dayView(d){
@@ -606,7 +606,7 @@ function render(){
     if (q){
       const hits = items.filter(i=>!weg.has(i.id) && passt(i, q)).sort((a,b)=>a.d-b.d || byTime(a,b));
       html += hits.length
-        ? `<div class="sect"><div class="listcard"><ul class="list">${hits.map(i=>row(i,{noTick:true, when: i.d===0?"Heute":i.d===1?"Morgen":fmtWd.format(dateOf(i.d))})).join("")}</ul></div></div>`
+        ? `<div class="sect"><h2><small>Zum Löschen nach links wischen</small></h2><div class="listcard"><ul class="list">${hits.map(i=>row(i,{noTick:true, swipe:true, when: i.d===0?"Heute":i.d===1?"Morgen":fmtWd.format(dateOf(i.d))})).join("")}</ul></div></div>`
         : `<div class="sect"><div class="listcard"><div class="empty">Dazu habe ich nichts gefunden.<small>Versuch ein anderes Wort.</small></div></div></div>`;
     }
   }
