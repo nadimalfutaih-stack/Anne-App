@@ -65,6 +65,18 @@ h1{font-weight:800;font-size:min(1.857rem,9vw);letter-spacing:-.02em;line-height
 .frage button:active{transform:scale(.97)}
 .ftipp{font-size:.86rem;color:var(--muted);text-align:center;margin-top:.35rem}
 .ftipp.warn{color:#8A5A00;font-weight:600}
+/* Knopf und Übersicht "Alles, was kommt" */
+.alles{display:flex;width:100%;align-items:center;justify-content:center;gap:.45rem;flex-wrap:wrap;margin-top:.7rem;min-height:3rem;padding:.4rem .8rem;border-radius:14px;background:var(--card);border:2px solid var(--nav-on);color:var(--nav-on);font:inherit;font-weight:700;font-size:1.02rem;cursor:pointer;touch-action:manipulation}
+.alles small{font-weight:600;color:var(--muted);font-size:.86rem}
+.alles:active{transform:scale(.99)}
+.sect h2.grp{display:flex;justify-content:space-between;align-items:baseline;gap:.6rem}
+.zl{display:grid;grid-template-columns:4.4rem minmax(0,1fr) auto;gap:.6rem;align-items:center;padding:.5rem .85rem;border-bottom:1px solid var(--line);min-height:3.2rem}
+.zl:last-child{border-bottom:0}
+.zl .dt{font-size:.82rem;color:var(--muted);line-height:1.2}
+.zl .dt b{display:block;font-size:.95rem;color:var(--fg)}
+.zl .zt{font-weight:600;overflow-wrap:anywhere}
+.zl .zt small{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}
+.zl .zk{font-size:1.15rem;white-space:nowrap}
 .ftipp.ok{color:#2F6B45;font-weight:600}
 /* Karte "In den Kalender eintragen" */
 .vorschlag{margin-top:.7rem;background:var(--card);border:2px solid var(--next);border-radius:14px;padding:.8rem;display:grid;gap:.55rem}
@@ -492,9 +504,30 @@ function pickHint(when){
 }
 // ---------- Fragefeld (statt Sprachknopf) ----------
 let vMsg = "", frage = "";
+// ---------- "Alles, was kommt": Übersicht über alle offenen Einträge, nach Wochen und Monaten ----------
+const kommt = () => items.filter(i => !weg.has(i.id) && !done.has(i.id) && i.d >= 0).sort((a,b) => a.d - b.d || byTime(a,b));
+function allesKnopf(){ const n = kommt().length; return `<button class="alles" id="alles">🗓 Alles, was kommt <small>· ${n} ${n === 1 ? "Eintrag" : "Einträge"}</small></button>`; }
+const fmtKurzTag = new Intl.DateTimeFormat("de-DE",{day:"numeric",month:"short"});
+const fmtWdKurz = new Intl.DateTimeFormat("de-DE",{weekday:"short"});
+const fmtMonat = new Intl.DateTimeFormat("de-DE",{month:"long"});
+function allesView(){
+  const liste = kommt();
+  if (!liste.length) return `<div class="sect"><div class="listcard"><div class="empty">Es steht nichts an.<small>Neue Einträge erscheinen hier automatisch.</small></div></div></div>`;
+  const bisSo = (7 - today.getDay()) % 7;          // Tage bis Sonntag dieser Woche
+  const gruppen = [];
+  const gruppe = (key, titel, sub) => { let g = gruppen.find(x => x.key === key); if (!g){ g = {key, titel, sub, rows: []}; gruppen.push(g); } return g; };
+  liste.forEach(i => { const x = dateOf(i.d);
+    if (i.d <= bisSo) gruppe("w0", "Diese Woche", "bis " + fmtWdKurz.format(dateOf(bisSo)).replace(".","") + ", " + fmtKurzTag.format(dateOf(bisSo))).rows.push(i);
+    else if (i.d <= bisSo + 7) gruppe("w1", "Nächste Woche", fmtKurzTag.format(dateOf(bisSo + 1)) + " – " + fmtKurzTag.format(dateOf(bisSo + 7))).rows.push(i);
+    else gruppe("m" + x.getFullYear() + "-" + x.getMonth(), fmtMonat.format(x) + (x.getFullYear() !== today.getFullYear() ? " " + x.getFullYear() : ""), "").rows.push(i); });
+  const zeile = i => { const k = i.cats.map(c => (TILES.find(t => t.name === c) || {}).icon).filter(Boolean).join(" ") || OTHER.icon;
+    const wd = i.d === 0 ? "Heute" : i.d === 1 ? "Morgen" : fmtWdKurz.format(dateOf(i.d)).replace(".","");
+    return `<li class="zl"><div class="dt"><b>${wd}</b>${fmtKurzTag.format(dateOf(i.d))}</div><div class="zt">${esc(i.t)}${i.time ? `<small>${i.time} Uhr</small>` : ""}</div><div class="zk" aria-hidden="true">${k}</div></li>`; };
+  return gruppen.map(g => `<div class="sect"><h2 class="grp">${g.titel}<small>${g.sub || (g.rows.length === 1 ? "1 Eintrag" : g.rows.length + " Einträge")}</small></h2><div class="listcard"><ul class="list">${g.rows.map(zeile).join("")}</ul></div></div>`).join("");
+}
 function frageHTML(){
   return `<form class="frage" id="frageForm" role="search" autocomplete="off"><input id="frage" type="text" enterkeyhint="go" value="${esc(frage)}" placeholder="z. B. Was muss ich morgen kaufen?" aria-label="Frage an Mein Tag"><button type="submit">Los</button></form>
-    <div class="ftipp${vMsg ? (vOk ? " ok" : " warn") : ""}" role="status">${esc(vMsg || "Fragen oder Eintragen. Zum Sprechen: 🎤 der Tastatur")}</div>${vorschlag ? vorschlagHTML() : ""}`;
+    <div class="ftipp${vMsg ? (vOk ? " ok" : " warn") : ""}" role="status">${esc(vMsg || "Fragen oder Eintragen. Zum Sprechen: 🎤 der Tastatur")}</div>${vorschlag ? vorschlagHTML() : allesKnopf()}`;
 }
 // ---------- Eintragen ohne Siri: Kalender-Datei (.ics), das iPhone zeigt "Hinzufügen" ----------
 let vorschlag = null, vOk = false;
@@ -610,6 +643,9 @@ function render(){
     setHeader("Danach", null);
     html += tilesHTML() + frageHTML();
     html += cat ? catView() : pickHint("ab übermorgen");
+  } else if (view==="alles"){
+    setHeader("Alles, was kommt", null);
+    html += allesView();
   } else {
     setHeader("Suchen", null);
     html += `<input id="q" class="search" type="search" placeholder="Was suchst du? z. B. Turnbeutel" aria-label="Im Kalender suchen" value="${esc(q)}">`;
@@ -678,6 +714,7 @@ document.addEventListener("submit", ev=>{
   render(); setTimeout(()=>document.querySelector(".vorschlag")?.scrollIntoView({block:"center", behavior:"smooth"}), 50);
 });
 document.addEventListener("click", ev=>{
+  if (ev.target.closest("#alles")){ setView("alles"); cat = null; vMsg = ""; frage = ""; render(); window.scrollTo(0,0); return; }
   if (ev.target.closest("#vEintragen")){ eintragen(false); return; }
   if (ev.target.closest("#vApple")){ eintragen(true); return; }
   if (ev.target.closest("#vSuchen")){ const t = vorschlag ? (document.getElementById("vText")?.value || vorschlag.text) : frage; vorschlag = null; verstehen(t); return; }
