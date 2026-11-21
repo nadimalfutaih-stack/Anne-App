@@ -1,0 +1,130 @@
+<title>Mein Tag Neu im Kästchen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: zwei Handy-Bildschirme (am Handy untereinander) in festen Salbei-Farben: links Startseite mit Neu-Hinweis, rechts geöffnetes Kästchen mit NEU-Schildern. */
+:root{--bg:#EEF4EF;--fg:#1D2A36;--muted:#56616C;--card:#fff;--line:#DCE6DE;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue","Segoe UI",system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#141a16;--fg:#eef2ee;--muted:#a9b4ac;--card:#1e2620;--line:#2f3a32;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141a16;--fg:#eef2ee;--muted:#a9b4ac;--card:#1e2620;--line:#2f3a32;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.45}
+.wrap{max-width:900px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-size:26px;margin:0}
+.lead{color:var(--muted);margin:6px 0 0;max-width:64ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:26px;margin-top:24px;align-items:start}
+.col{display:grid;gap:10px;justify-items:center}
+.col h2{margin:0;font-size:18px;justify-self:start}
+.col h2 small{font-weight:500;color:var(--muted);font-size:14px}
+
+.phone{width:100%;max-width:340px;height:700px;border-radius:40px;border:9px solid #0a0a0a;overflow:hidden;position:relative;background:#EEF4EF;color:#1D2A36;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;padding:40px 14px 0}
+.top{display:flex;justify-content:space-between;align-items:center}
+.brand{display:flex;gap:7px;align-items:center;font-weight:600;font-size:13px;color:#56616c}
+.sun{width:22px;height:22px;border-radius:6px;background:#173653}
+.cal{border:1px solid #DCE6DE;border-radius:999px;padding:5px 11px;font-weight:600;font-size:12.5px;background:#fff}
+.back{font-weight:600;font-size:13.5px;color:#173653}
+.ttl{display:flex;align-items:center;gap:9px;margin-top:12px}
+.ttl b{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.dot{width:28px;height:28px;border-radius:50%;background:#C62835;color:#fff;display:grid;place-items:center;font-weight:700;font-size:13.5px}
+.ttl span{font-size:15px;color:#5b6670}
+.hi{font-size:15px;font-weight:600;margin-top:2px}
+
+.neu-hinweis{margin-top:10px;background:#FFE7A3;border-radius:12px;padding:8px 11px;display:flex;gap:8px;align-items:center;font-size:13.5px}
+.neu-hinweis b{font-size:14px}
+.neu-hinweis small{display:block;color:#6B5A33;font-size:12px}
+.neu-hinweis .x{margin-left:auto;font-size:12px;font-weight:700;color:#6B5A33;white-space:nowrap}
+
+.tiles{margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.tile{background:#fff;border-radius:12px;padding:6px 8px;display:grid;position:relative}
+.tile .ic{font-size:15px;line-height:1.1}
+.tile b{font-size:12px}
+.tile small{font-size:10.5px;color:#56616c}
+.tile .n{position:absolute;top:5px;right:6px;font-size:10.5px;font-weight:700;color:#fff;background:var(--c);border-radius:999px;min-width:17px;height:17px;display:grid;place-items:center;padding:0 4px}
+.tile .nb{position:absolute;bottom:6px;right:6px;font-size:9.5px;font-weight:800;letter-spacing:.04em;background:#FFD24A;color:#1D2A36;border-radius:999px;padding:1px 6px}
+.tile.has-neu{box-shadow:inset 0 0 0 2px #FFD24A}
+.tile.on{box-shadow:inset 0 0 0 2px #173653}
+
+.mic{margin:16px auto 0;width:66px;height:66px;border-radius:50%;background:#173653;display:grid;place-items:center}
+.mic i{width:14px;height:24px;border-radius:8px;background:#fff;display:block}
+.vh{text-align:center;font-size:12.5px;font-weight:600;color:#56616c;margin-top:4px}
+
+.cathead{display:flex;align-items:center;gap:6px;margin-top:12px;font-weight:800;font-size:16px}
+.cathead small{font-weight:500;color:#56616c;font-size:12.5px}
+.list{margin-top:6px;background:#fff;border-radius:12px;overflow:hidden}
+.row{display:grid;grid-template-columns:42px 4px 1fr 24px;gap:8px;align-items:center;padding:7px 10px;border-bottom:1px solid #DCE6DE;min-height:42px}
+.row:last-child{border-bottom:0}
+.row.neu{background:#FFF6D9}
+.bar{align-self:stretch;border-radius:3px;background:#C21878}
+.tm{font-size:11.5px;color:#3d4954}.t{font-size:13.5px;font-weight:600;line-height:1.2}.t small{display:block;font-weight:400;color:#66717b;font-size:11px}
+.tag{display:inline-block;margin-left:5px;font-size:9.5px;font-weight:800;letter-spacing:.04em;background:#FFD24A;border-radius:999px;padding:1px 6px;vertical-align:2px}
+.ck{width:20px;height:20px;border-radius:50%;border:2px solid #1d2a36}
+.nav{margin-top:auto;margin-inline:-14px;padding:8px 14px 22px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#EEF4EF;border-top:1px solid #DCE6DE}
+.nav span{display:grid;place-items:center;height:40px;border-radius:12px;background:#fff;font-weight:600;font-size:13px;position:relative}
+.nav span.on{background:#173653;color:#fff}
+.nav span .p{position:absolute;top:5px;right:8px;width:8px;height:8px;border-radius:50%;background:#FFD24A}
+
+.note{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 20px;max-width:64ch}
+.note h2{font-size:17px;margin:0 0 8px}
+.note ul{margin:0;padding-left:20px;display:grid;gap:5px}
+.frage{margin-top:12px;display:flex;gap:6px}
+.frage .feld{flex:1;min-height:40px;background:#fff;border:2px solid #173653;border-radius:12px;padding:6px 10px;font-size:12.5px;color:#8a949c;display:flex;align-items:center}
+.frage .los{padding:0 12px;border-radius:12px;background:#173653;color:#fff;font-weight:700;font-size:13px;display:grid;place-items:center}
+</style>
+
+<div class="wrap">
+  <h1>Muster: Neues direkt im Kästchen</h1>
+  <p class="lead">Kein Streifen oben. Neue Einträge stehen gleich in ihrem Kästchen, das Kästchen zeigt nur „NEU“. Links die Startseite, rechts das geöffnete Kästchen „Einkauf“. Die Einträge sind Beispiele.</p>
+
+  <div class="grid">
+    <div class="col"><h2>Startseite <small>· Neues steckt schon in den Kästchen</small></h2>
+      <div class="phone"><div class="scr">
+        <div class="top"><div class="brand"><div class="sun"></div>Mein Tag</div><div class="cal">Kalender öffnen</div></div>
+        <div class="ttl"><b>Heute</b><div class="dot">20</div><span>Freitag, 20. Nov.</span></div>
+        <div class="hi">Guten Morgen, Anne!</div>
+                <div class="tiles">
+          <div class="tile has-neu" style="--c:#2F8A57"><span class="ic">🛒</span><b>Einkauf</b><small>heute</small><span class="n">4</span><span class="nb">2 NEU</span></div>
+          <div class="tile" style="--c:#C0587E"><span class="ic">🎁</span><b>Geschenke</b><small>heute</small><span class="n">1</span></div>
+          <div class="tile has-neu" style="--c:#D0782B"><span class="ic">🎒</span><b>Kinder</b><small>heute</small><span class="n">2</span><span class="nb">1 NEU</span></div>
+          <div class="tile" style="--c:#6A59B8"><span class="ic">📄</span><b>Unterlagen</b><small>heute</small><span class="n">1</span></div>
+          <div class="tile" style="--c:#C03C3C"><span class="ic">🩺</span><b>Arzt</b><small>heute</small><span class="n">1</span></div>
+          <div class="tile" style="--c:#8A6D4B"><span class="ic">🏠</span><b>Haushalt</b><small>heute</small><span class="n">1</span></div>
+          <div class="tile" style="--c:#2E86AB"><span class="ic">👭</span><b>Treffen</b><small>heute</small><span class="n">1</span></div>
+          <div class="tile" style="--c:#A0568F"><span class="ic">💆‍♀️</span><b>Für mich</b><small>heute</small><span class="n">1</span></div>
+          <div class="tile" style="--c:#7B8790"><span class="ic">📌</span><b>Sonstiges</b><small>heute</small><span class="n">1</span></div>
+        </div>
+        <div class="frage"><div class="feld">Frag mich … z. B. „Was muss ich morgen kaufen?“</div><div class="los">Los</div></div>
+        <div class="nav"><span class="on">Heute</span><span>Morgen</span><span>Danach</span><span>Suchen</span></div>
+      </div></div>
+    </div>
+
+    <div class="col"><h2>Kästchen „Einkauf“ <small>· NEU-Schilder</small></h2>
+      <div class="phone"><div class="scr">
+        <div class="top"><div class="brand"><div class="sun"></div>Mein Tag</div><div class="cal">Kalender öffnen</div></div>
+        <div class="ttl"><b>Heute</b><div class="dot">20</div><span>Freitag, 20. Nov.</span></div>
+        <div class="tiles">
+          <div class="tile on" style="--c:#2F8A57"><span class="ic">🛒</span><b>Einkauf</b><small>heute</small><span class="n">4</span></div>
+          <div class="tile" style="--c:#C0587E"><span class="ic">🎁</span><b>Geschenke</b><small>heute</small><span class="n">1</span></div>
+          <div class="tile has-neu" style="--c:#D0782B"><span class="ic">🎒</span><b>Kinder</b><small>heute</small><span class="n">2</span><span class="nb">1 NEU</span></div>
+        </div>
+        <div class="cathead">🛒 Einkauf <small>4 offen · 2 neu</small></div>
+        <div class="list">
+          <div class="row neu"><div class="tm">ganzt.</div><div class="bar"></div><div class="t">Spüli<span class="tag">NEU</span><small>Kalender</small></div><div class="ck"></div></div>
+          <div class="row neu"><div class="tm">13:00</div><div class="bar"></div><div class="t">Rindfleisch kaufen<span class="tag">NEU</span><small>Kalender</small></div><div class="ck"></div></div>
+          <div class="row"><div class="tm">15:00</div><div class="bar"></div><div class="t">Make up DM<small>Kalender</small></div><div class="ck"></div></div>
+          <div class="row"><div class="tm">19:00</div><div class="bar"></div><div class="t">Yum Yum kaufen<small>Kalender</small></div><div class="ck"></div></div>
+        </div>
+        <div class="nav"><span class="on">Heute</span><span>Morgen</span><span>Danach</span><span>Suchen</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="note">
+    <h2>So funktioniert es</h2>
+    <ul>
+      <li><b>Kein gelber Streifen oben</b> mehr.</li>
+      <li>Neue Einträge stehen <b>sofort im passenden Kästchen</b>. Das Kästchen hat dann einen gelben Rand und „2 NEU“.</li>
+      <li><b>Im Kästchen</b> stehen die neuen Einträge oben, leicht gelb, mit „NEU“-Schild.</li>
+      <li>Nach dem Öffnen des Kästchens gelten sie als gesehen, und der Hinweis verschwindet.</li>
+    </ul>
+  </div>
+</div>
