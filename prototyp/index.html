@@ -442,7 +442,7 @@ function catView(){
   const when = i => i.d>1 ? fmtWd.format(dateOf(i.d)) : "";
   let html = `<div class="cathead"><h2>${t.icon} ${t.name}</h2><span>${nOffen} offen${nNeu ? ` · ${nNeu} neu` : ""}</span><button class="catclose" data-cat="${t.name}">Alle zeigen</button></div>`;
   html += open.length
-    ? `<div class="sect"><div class="listcard"><ul class="list">${open.map(i=>row({...i, task:true},{when:when(i), noHint:true})).join("")}</ul></div></div>`
+    ? `<div class="sect"><div class="listcard"><ul class="list">${open.map(i=>row({...i, task:true},{when:when(i), noHint:true, swipe:done.has(i.id)})).join("")}</ul></div></div>`
     : `<div class="sect"><div class="listcard"><div class="empty">${fin.length ? "Alles erledigt. Schön!" : "Hier steht nichts an."}</div></div></div>`;
   if (fin.length) html += `<div class="sect"><h2>Erledigt <small>· zum Löschen nach links wischen</small></h2><div class="listcard"><ul class="list">${fin.map(i=>row({...i, task:true},{when:when(i), noHint:true, swipe:true})).join("")}</ul></div></div>`;
   return html;
@@ -588,19 +588,27 @@ function loeschen(id){
 }
 // Wischen: erledigten Eintrag nach links ziehen. Halb weg = löschen, ein Stück = roter Knopf "Löschen" bleibt stehen.
 let zug = null;
-document.addEventListener("pointerdown", ev => { const r = ev.target.closest(".swrap .row"); if (!r || ev.target.closest(".tick")) return;
-  document.querySelectorAll(".swrap .row").forEach(x => { if (x !== r){ x.style.transform = ""; x.parentElement.classList.remove("auf"); } });
-  zug = {r, x: ev.clientX, y: ev.clientY, dx: 0, an: false, start: r.style.transform ? -r.parentElement.querySelector(".del").offsetWidth : 0}; });
-document.addEventListener("pointermove", ev => { if (!zug) return;
-  const dx = ev.clientX - zug.x, dy = ev.clientY - zug.y;
-  if (!zug.an){ if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)){ if (Math.abs(dy) > 12) zug = null; return; } zug.an = true; zug.r.classList.add("zieht"); zug.r.parentElement.classList.add("auf"); }
-  zug.dx = Math.min(0, zug.start + dx); zug.r.style.transform = "translateX(" + zug.dx + "px)"; });
-const zugEnde = () => { if (!zug) return; const z = zug; zug = null; if (!z.an) return;
+function zugStart(ziel, x, y){ const r = ziel.closest && ziel.closest(".swrap .row"); if (!r || ziel.closest(".tick")) return;
+  document.querySelectorAll(".swrap .row").forEach(o => { if (o !== r){ o.style.transform = ""; o.parentElement.classList.remove("auf"); } });
+  zug = {r, x, y, dx: 0, an: false, start: r.style.transform ? -r.parentElement.querySelector(".del").offsetWidth : 0}; }
+// Gibt true zurück, sobald wirklich seitlich gewischt wird (dann darf die Seite nicht mitscrollen).
+function zugWeiter(x, y){ if (!zug) return false;
+  const dx = x - zug.x, dy = y - zug.y;
+  if (!zug.an){ if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)){ if (Math.abs(dy) > 12) zug = null; return false; }
+    zug.an = true; zug.r.classList.add("zieht"); zug.r.parentElement.classList.add("auf"); }
+  zug.dx = Math.min(0, zug.start + dx); zug.r.style.transform = "translateX(" + zug.dx + "px)"; return true; }
+function zugEnde(){ if (!zug) return; const z = zug; zug = null; if (!z.an) return;
   z.r.classList.remove("zieht"); const w = z.r.offsetWidth, knopf = z.r.parentElement.querySelector(".del");
-  if (-z.dx > w * 0.5){ z.r.style.transform = "translateX(-100%)"; setTimeout(() => loeschen(knopf.dataset.del), 160); }
-  else if (-z.dx > 40) z.r.style.transform = "translateX(-" + knopf.offsetWidth + "px)";
-  else { z.r.style.transform = ""; setTimeout(() => { if (!z.r.style.transform) z.r.parentElement.classList.remove("auf"); }, 200); } };
-document.addEventListener("pointerup", zugEnde); document.addEventListener("pointercancel", zugEnde);
+  if (-z.dx > w * 0.4){ z.r.style.transform = "translateX(-100%)"; setTimeout(() => loeschen(knopf.dataset.del), 160); }
+  else if (-z.dx > 30) z.r.style.transform = "translateX(-" + knopf.offsetWidth + "px)";
+  else { z.r.style.transform = ""; setTimeout(() => { if (!z.r.style.transform) z.r.parentElement.classList.remove("auf"); }, 200); } }
+// iPhone: Finger (Touch-Ereignisse, damit Safari das Wischen sicher an die App gibt). Computer: Maus.
+document.addEventListener("touchstart", ev => { const t = ev.touches[0]; if (ev.touches.length === 1) zugStart(ev.target, t.clientX, t.clientY); }, {passive: true});
+document.addEventListener("touchmove", ev => { const t = ev.touches[0]; if (zugWeiter(t.clientX, t.clientY) && ev.cancelable) ev.preventDefault(); }, {passive: false});
+document.addEventListener("touchend", zugEnde); document.addEventListener("touchcancel", zugEnde);
+document.addEventListener("pointerdown", ev => { if (ev.pointerType === "mouse") zugStart(ev.target, ev.clientX, ev.clientY); });
+document.addEventListener("pointermove", ev => { if (ev.pointerType === "mouse") zugWeiter(ev.clientX, ev.clientY); });
+document.addEventListener("pointerup", ev => { if (ev.pointerType === "mouse") zugEnde(); });
 function toast(text, undoable){
   const t = document.getElementById("toast");
   document.getElementById("toastText").textContent = text;
