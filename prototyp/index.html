@@ -302,6 +302,22 @@ const catsFor = t => { const l = (t||"").toLowerCase().normalize("NFC").replace(
   const strong = HINTS.filter(h => (h.words.some(w => l.includes(w)) || (h.wholeRx && h.wholeRx.test(l))) && !(h.except||[]).some(x => l.includes(x))).map(h => h.name);
   return strong.length ? strong : HINTS.filter(h => h.weakRx && h.weakRx.test(l)).map(h => h.name); };
 const items = EXAMPLES.map((e,i)=>{ const cats = catsFor(e.t); return {...e, id: e.key || "e"+i, cats, hint: cats.join(" · "), task: !e.time && !/geburtstag/i.test(e.t)}; });
+// ---------- Eigene Einträge: in der App selbst gespeichert (auf diesem iPhone), damit sie SOFORT im Kästchen stehen ----------
+// Kommt derselbe Eintrag (gleicher Titel, gleicher Tag) später aus dem Kalender, wird die eigene Kopie entfernt.
+const tagKey = d => { const x = dateOf(d); return x.getFullYear() + "-" + String(x.getMonth()+1).padStart(2,"0") + "-" + String(x.getDate()).padStart(2,"0"); };
+let eigene = [];
+try { eigene = JSON.parse(localStorage.getItem("meintag-eigene") || "[]"); } catch(_){}
+const eigeneSpeichern = () => { try { localStorage.setItem("meintag-eigene", JSON.stringify(eigene)); } catch(_){} };
+function eigenesItem(e){
+  const [y,m,t] = e.tag.split("-").map(Number); const d = Math.round((new Date(y, m-1, t) - today) / 864e5);
+  const cats = catsFor(e.t);
+  return {t: e.t, d, cal: "kalender", id: "eigen:" + e.t + "@" + e.tag, cats, hint: cats.join(" · "), task: !/geburtstag/i.test(e.t), eigen: true};
+}
+eigene = eigene.filter(e => { const it = eigenesItem(e);
+  if (isNaN(it.d) || it.d < 0) return false;
+  if (items.some(i => i.d === it.d && i.t.trim().toLowerCase() === e.t.trim().toLowerCase())) return false;
+  items.push(it); return true; });
+eigeneSpeichern();
 
 let done = new Set();
 try { done = new Set(JSON.parse(localStorage.getItem("meintag-done")||"[]")); } catch(_){}
@@ -433,9 +449,17 @@ function kalenderDatei(titel, d){
 function eintragen(){
   const t = (document.getElementById("vText")?.value || vorschlag.text).trim();
   if (!t){ vMsg = "Bitte erst einen Text eingeben."; vOk = false; return render(); }
-  const url = URL.createObjectURL(new Blob([kalenderDatei(t, vorschlag.d)], {type:"text/calendar"}));
+  const d = vorschlag.d;
+  // 1. Sofort in der App speichern und im passenden Kästchen zeigen.
+  let it = items.find(i => i.d === d && i.t.trim().toLowerCase() === t.toLowerCase());
+  if (!it){ const e = {t, tag: tagKey(d)}; eigene.push(e); eigeneSpeichern(); it = eigenesItem(e); items.push(it); }
+  const kasten = it.cats[0] || "Sonstiges";
+  merken();   // selbst eingetragen = schon gesehen
+  setView(d === 0 ? "heute" : d === 1 ? "morgen" : "danach"); cat = kasten;
+  // 2. Zusätzlich die Kalender-Datei öffnen, damit es auch im Apple-Kalender steht.
+  const url = URL.createObjectURL(new Blob([kalenderDatei(t, d)], {type:"text/calendar"}));
   vorschlag = null; frage = ""; vOk = true;
-  vMsg = "Im Apple-Fenster auf „Hinzufügen“ tippen. Danach „Mein Tag“ neu öffnen.";
+  vMsg = "✓ „" + t + "“ steht jetzt unter " + kasten + ". Im Apple-Fenster „Hinzufügen“ tippen, dann steht es auch im Kalender.";
   render();
   location.href = url;
 }
